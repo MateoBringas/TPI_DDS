@@ -1,0 +1,40 @@
+/* Navbar.css */
+.navbar {
+    background-color: #f47575;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between; /* Distribuye espacio entre elementos */
+    align-items: center;
+}
+
+.login-button {
+    background-color: #ed4f85;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+/* Estilos para los enlaces de navegación (elementos <a>) */
+.nav-links a {
+    background-color: transparent;
+    color: #ffffff;
+    padding: 10px 15px;
+    border: none;
+    margin-left: 10px;
+    cursor: pointer;
+    text-decoration: none; /* Elimina la línea inferior predeterminada de los enlaces */
+}
+
+/* Hover para los enlaces de navegación */
+.nav-links a:hover {
+    background-color: #dd1c57;
+}
+
+/* Hover para todos los botones */
+.login-button:hover,
+.nav-links button:hover {
+    background-color: #dd1c57;
+}

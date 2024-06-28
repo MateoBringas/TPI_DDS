@@ -1,0 +1,99 @@
+/* Estilos generales para las páginas */
+.container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.table-container,
+.search-container,
+.form-container {
+    margin-bottom: 20px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center; /* Centrar el texto en la tabla */
+}
+
+.table th {
+    background-color: #f8c8dc; /* Rosa pastel */
+    text-align: center;
+}
+
+.link {
+    color: #ff69b4; /* Rosa pastel oscuro */
+    text-decoration: underline;
+    margin-right: 10px;
+}
+
+.edit-button,
+.delete-button,
+.form-button {
+    color: #000000;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.edit-button {
+    background-color: #efaeae; /* Verde menta */
+}
+
+.delete-button {
+    background-color: #f44d4d; /* Rosa pastel oscuro */
+}
+
+.edit-button,
+.delete-button,
+.form-button {
+    border-radius: 5px;  /* Redondea los bordes */
+    font-weight: bold;   /* Pone la fuente en negrita */
+}
+
+.edit-button:hover,
+.delete-button:hover {
+    opacity: 0.8;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    background-color: #f8e6e7; /* Rosa pastel claro */
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-input {
+    padding: 10px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    background-color: #f8e6e7; /* Rosa pastel claro */
+}
+
+.form-button {
+    background-color: #f48484; /* Verde menta */
+    color: #000000;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+}
+
+.form-button:hover {
+    opacity: 0.8;
+}
