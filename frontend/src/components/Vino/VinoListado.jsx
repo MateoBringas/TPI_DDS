@@ -29,7 +29,7 @@ const VinoListado = ({ vinos, onSelect, onDelete }) => {
               <td>{vino.id}</td>
               <td>{vino.nombre}</td>
               <td>{new Date(vino.anejamiento).toLocaleDateString()}</td>
-              <td>{vino.Bodega ? vino.Bodega.id : "Sin bodega"}</td>
+              <td>{vino.BodegaId ? vino.BodegaId : "Sin bodega"}</td>
               <td>
                 <button className="edit-button" onClick={() => onSelect(vino)}>
                   Editar
