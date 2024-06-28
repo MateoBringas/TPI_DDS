@@ -1,94 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import '../Paginas.css';
+import React from 'react';
+import { useForm } from 'react-hook-form';
 
-const EnologoRegistro = ({ enologo, onSave }) => {
-    const [form, setForm] = useState({
-        id: enologo ? enologo.id : '',
-        nombre: enologo ? enologo.nombre : '',
-        apellido: enologo ? enologo.apellido : '',
-        fechaNacimiento: enologo ? enologo.fechaNacimiento : ''
-    });
+function EnologoRegistro({ item, onGrabar, onVolver }) {
+    const { register, handleSubmit, setValue } = useForm();
 
-    useEffect(() => {
-        if (enologo) {
-            setForm({
-                id: enologo.id,
-                nombre: enologo.nombre,
-                apellido: enologo.apellido,
-                fechaNacimiento: enologo.fechaNacimiento
-            });
-        } else {
-            setForm({
-                id: '',
-                nombre: '',
-                apellido: '',
-                fechaNacimiento: ''
-            });
+    React.useEffect(() => {
+        if (item) {
+            setValue("id", item.id);
+            setValue("nombre", item.nombre);
+            setValue("apellido", item.apellido);
+            setValue("fechaNacimiento", item.fechaNacimiento);
         }
-    }, [enologo]);
+    }, [item, setValue]);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setForm({ ...form, [name]: value });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSave(form);
+    const onSubmit = (data) => {
+        onGrabar(data);
     };
 
     return (
-        <div className="container form-container">
-            <form onSubmit={handleSubmit} className="form">
-                {form.id && (
-                    <div className="form-input">
-                        <label>ID:</label>
-                        <input
-                            type="text"
-                            name="id"
-                            value={form.id}
-                            readOnly
-                            className="form-input"
-                        />
-                    </div>
-                )}
-                <div className="form-input">
-                    <label>Nombre:</label>
-                    <input
-                        type="text"
-                        name="nombre"
-                        value={form.nombre}
-                        onChange={handleChange}
-                        className="form-input"
-                        required
-                    />
-                </div>
-                <div className="form-input">
-                    <label>Apellido:</label>
-                    <input
-                        type="text"
-                        name="apellido"
-                        value={form.apellido}
-                        onChange={handleChange}
-                        className="form-input"
-                        required
-                    />
-                </div>
-                <div className="form-input">
-                    <label>Fecha de Nacimiento:</label>
-                    <input
-                        type="date"
-                        name="fechaNacimiento"
-                        value={form.fechaNacimiento}
-                        onChange={handleChange}
-                        className="form-input"
-                        required
-                    />
-                </div>
-                <button type="submit" className="form-button">Guardar</button>
-            </form>
-        </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="form">
+            <input
+                type="text"
+                placeholder="Nombre"
+                {...register("nombre")}
+                className="form-input"
+            />
+            <input
+                type="text"
+                placeholder="Apellido"
+                {...register("apellido")}
+                className="form-input"
+            />
+            <input
+                type="date"
+                {...register("fechaNacimiento")}
+                className="form-input"
+            />
+            <button type="submit" className="form-button">Grabar</button>
+            <button type="button" onClick={onVolver} className="form-button">Volver</button>
+        </form>
     );
-};
+}
 
 export default EnologoRegistro;

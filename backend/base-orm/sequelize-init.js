@@ -281,6 +281,8 @@ const Pedido = sequelize.define(
     { timestamps: false }
 );
 
+Resenia.belongsTo(Enologo, { foreignKey: 'EnologoId' });
+
 // Exportación de los modelos
 module.exports = {
     sequelize,

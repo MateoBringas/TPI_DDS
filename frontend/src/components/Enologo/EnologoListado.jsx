@@ -1,36 +1,32 @@
 import React from 'react';
-import '../Paginas.css';
 
-const EnologoListado = ({ enologos, onSelect, onDelete }) => {
+function EnologoListado({ items, onConsultar, onModificar, onEliminar }) {
     return (
-        <div className="container table-container">
-            <table className="table">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>Fecha de Nacimiento</th>
-                    <th>Acciones</th>
+        <table className="table">
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Fecha de Nacimiento</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {items.map(enologo => (
+                <tr key={enologo.id}>
+                    <td>{enologo.nombre}</td>
+                    <td>{enologo.apellido}</td>
+                    <td>{enologo.fechaNacimiento}</td>
+                    <td>
+                        <button className="edit-button" onClick={() => onModificar(enologo.id)}>Modificar</button>
+                        <button className="delete-button" onClick={() => onEliminar(enologo.id)}>Eliminar</button>
+                        <button className="form-button" onClick={() => onConsultar(enologo.id)}>Consultar</button>
+                    </td>
                 </tr>
-                </thead>
-                <tbody>
-                {enologos.map(enologo => (
-                    <tr key={enologo.id}>
-                        <td>{enologo.id}</td>
-                        <td>{enologo.nombre}</td>
-                        <td>{enologo.apellido}</td>
-                        <td>{new Date(enologo.fechaNacimiento).toLocaleDateString()}</td>
-                        <td>
-                            <button className="edit-button" onClick={() => onSelect(enologo)}>Editar</button>
-                            <button className="delete-button" onClick={() => onDelete(enologo.id)}>Eliminar</button>
-                        </td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
-        </div>
+            ))}
+            </tbody>
+        </table>
     );
-};
+}
 
 export default EnologoListado;

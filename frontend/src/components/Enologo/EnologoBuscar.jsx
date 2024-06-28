@@ -1,34 +1,31 @@
-import React, { useState } from 'react';
-import '../Paginas.css';
+import React from 'react';
+import { useForm } from 'react-hook-form';
 
-const EnologoBuscar = ({ onSearch }) => {
-    const [query, setQuery] = useState('');
+function EnologoBuscar({ onBuscar, onAgregar }) {
+    const { register, handleSubmit } = useForm();
 
-    const handleChange = (e) => {
-        const value = e.target.value;
-        setQuery(value);
-        onSearch(value.trim());
-    };
-
-    const handleClear = () => {
-        setQuery('');
-        onSearch('');
+    const onSubmit = (data) => {
+        onBuscar(data);
     };
 
     return (
-        <div className="container search-container">
+        <form onSubmit={handleSubmit(onSubmit)} className="form">
             <input
                 type="text"
-                value={query}
-                onChange={handleChange}
-                placeholder="Buscar enólogo por nombre"
+                placeholder="Nombre"
+                {...register("Nombre")}
                 className="search-input"
             />
-            {query && (
-                <button className="form-button" onClick={handleClear}>Limpiar</button>
-            )}
-        </div>
+            <input
+                type="text"
+                placeholder="Apellido"
+                {...register("Apellido")}
+                className="search-input"
+            />
+            <button type="submit" className="form-button">Buscar</button>
+            <button type="button" onClick={onAgregar} className="form-button">Agregar</button>
+        </form>
     );
-};
+}
 
 export default EnologoBuscar;

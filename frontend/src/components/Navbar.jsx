@@ -8,11 +8,11 @@ function Navbar() {
             <div className="nav-links">
                 <Link to="/"> Inicio </Link>
                 <Link to="/vino">Vino</Link>
+                <Link to="/bodega">Bodega</Link>
                 <Link to="/resenia">Reseña</Link>
                 <Link to="/enologo">Enólogo</Link>
-                <Link to="/bodega">Bodega</Link>
-                <Link to="/cliente">Clientes</Link>
                 <Link to="/pedido">Pedido</Link>
+                <Link to="/cliente">Clientes</Link>
             </div>
             <Link to="/login" className="login-button">Iniciar Sesión</Link>
         </nav>
