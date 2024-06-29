@@ -40,16 +40,6 @@ function Enologo() {
         }
     }, []);
 
-    const handleConsultar = useCallback(async (id) => {
-        setAccionABMC("C");
-        try {
-            const data = await enologoService.BuscarPorId(id);
-            setItem(data);
-        } catch (error) {
-            console.error("Error fetching enologo by id:", error);
-        }
-    }, []);
-
     const handleModificar = useCallback(async (id) => {
         setAccionABMC("M");
         try {
@@ -100,7 +90,7 @@ function Enologo() {
     return (
         <div className="container">
             <div className="tituloPagina">
-                Enologos <small>{accionABMC === "L" ? "(Listado)" : "(Agregar / Modificar / Consultar)"}</small>
+                Enologos <small>{accionABMC === "L" ? "(Listado)" : "(Agregar / Modificar)"}</small>
             </div>
 
             {accionABMC === "L" && (
@@ -111,7 +101,6 @@ function Enologo() {
                     <div className="table-container">
                         <EnologoListado
                             items={items}
-                            onConsultar={handleConsultar}
                             onModificar={handleModificar}
                             onEliminar={handleEliminar}
                         />

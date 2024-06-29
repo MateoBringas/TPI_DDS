@@ -23,6 +23,7 @@ function EnologoBuscar({ onBuscar, onAgregar }) {
                 className="search-input"
             />
             <button type="submit" className="form-button">Buscar</button>
+            <br/>
             <button type="button" onClick={onAgregar} className="form-button">Agregar</button>
         </form>
     );

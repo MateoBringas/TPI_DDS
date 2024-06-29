@@ -1,6 +1,6 @@
 import React from 'react';
 
-function EnologoListado({ items, onConsultar, onModificar, onEliminar }) {
+function EnologoListado({ items, onModificar, onEliminar }) {
     return (
         <table className="table">
             <thead>
@@ -20,7 +20,6 @@ function EnologoListado({ items, onConsultar, onModificar, onEliminar }) {
                     <td>
                         <button className="edit-button" onClick={() => onModificar(enologo.id)}>Modificar</button>
                         <button className="delete-button" onClick={() => onEliminar(enologo.id)}>Eliminar</button>
-                        <button className="form-button" onClick={() => onConsultar(enologo.id)}>Consultar</button>
                     </td>
                 </tr>
             ))}
