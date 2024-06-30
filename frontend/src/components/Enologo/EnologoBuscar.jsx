@@ -9,33 +9,34 @@ export default function EnologoBuscar({
                                           Agregar
                                       }) {
     return (
-        <form name="FormBusqueda">
+        <form name="FormBusqueda" className="search-container">
             <div className="container-fluid">
                 <div className="row">
-                    <div className="col-sm-4 col-md-2">
-                        <label className="col-form-label">Nombre:</label>
-                    </div>
-                    <div className="col-sm-8 col-md-4">
+                    <div className="col-sm-6">
+                        <label className="col-form-label" htmlFor="nombre">
+                            Nombre:
+                        </label>
                         <input
                             type="text"
-                            className="form-input"
+                            className="form-control search-input"
+                            id="nombre"
                             onChange={(e) => setNombre(e.target.value)}
                             value={Nombre}
                             maxLength="55"
                             autoFocus
                         />
                     </div>
-                    <div className="col-sm-4 col-md-2">
-                        <label className="col-form-label">Apellido:</label>
-                    </div>
-                    <div className="col-sm-8 col-md-4">
+                    <div className="col-sm-6">
+                        <label className="col-form-label" htmlFor="apellido">
+                            Apellido:
+                        </label>
                         <input
                             type="text"
-                            className="form-input"
+                            className="form-control search-input"
+                            id="apellido"
                             onChange={(e) => setApellido(e.target.value)}
                             value={Apellido}
                             maxLength="55"
-                            autoFocus
                         />
                     </div>
                 </div>
@@ -44,20 +45,20 @@ export default function EnologoBuscar({
 
                 {/* Botones */}
                 <div className="row">
-                    <div className="col text-center">
+                    <div className="col text-center botones">
                         <button
                             type="button"
-                            className="form-button"
-                            onClick={() => Buscar()}
+                            className="btn btn-primary form-button"
+                            onClick={Buscar}
                         >
-                            <i className="fa fa-search"></i> Buscar
+                            <i className="fa fa-search"> </i> Buscar
                         </button>
                         <button
                             type="button"
-                            className="form-button"
-                            onClick={() => Agregar()}
+                            className="btn btn-primary form-button"
+                            onClick={Agregar}
                         >
-                            <i className="fa fa-plus"></i> Agregar
+                            <i className="fa fa-plus"> </i> Agregar
                         </button>
                     </div>
                 </div>

@@ -7,13 +7,6 @@ import EnologoRegistro from "./EnologoRegistro";
 import '../Paginas.css'; // Ruta del archivo CSS
 
 function Enologo() {
-    const TituloAccionABMC = {
-        A: "(Agregar)",
-        B: "(Eliminar)",
-        M: "(Modificar)",
-        C: "(Consultar)",
-        L: "(Listado)",
-    };
 
     const [AccionABMC, setAccionABMC] = useState("L");
     const [Nombre, setNombre] = useState("");
@@ -107,7 +100,7 @@ function Enologo() {
     return (
         <div className="container">
             <div className="tituloPagina">
-                Enologo <small>{TituloAccionABMC[AccionABMC]}</small>
+                Enologos
             </div>
 
             <div className="search-container">
@@ -121,6 +114,18 @@ function Enologo() {
                 />
             </div>
 
+            {AccionABMC !== "L" && (
+                <div className="form-container">
+                    <EnologoRegistro
+                        AccionABMC={AccionABMC}
+                        Item={Item}
+                        setItem={setItem}
+                        Grabar={Grabar}
+                        Volver={Volver}
+                    />
+                </div>
+            )}
+
             <div className="table-container">
                 <EnologoListado
                     Items={Items}
@@ -132,18 +137,6 @@ function Enologo() {
             {Items.length === 0 && (
                 <div className="alert alert-info mensajesAlert">
                     <i className="fa fa-exclamation-sign"></i> No se encontraron registros...
-                </div>
-            )}
-
-            {AccionABMC !== "L" && (
-                <div className="form-container">
-                    <EnologoRegistro
-                        AccionABMC={AccionABMC}
-                        Item={Item}
-                        setItem={setItem}
-                        Grabar={Grabar}
-                        Volver={Volver}
-                    />
                 </div>
             )}
         </div>
