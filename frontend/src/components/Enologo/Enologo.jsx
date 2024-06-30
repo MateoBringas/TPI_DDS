@@ -4,14 +4,17 @@ import { enologoService } from "../../services/Enologo.service";
 import EnologoBuscar from "./EnologoBuscar";
 import EnologoListado from "./EnologoListado";
 import EnologoRegistro from "./EnologoRegistro";
-import "../Paginas.css";  // Importa el archivo CSS
+import '../Paginas.css'; // Ruta del archivo CSS
 
 function Enologo() {
-    const [accionABMC, setAccionABMC] = useState("L");
-    const [items, setItems] = useState([]);
-    const [item, setItem] = useState(null);
 
-    const fetchEnologos = useCallback(async () => {
+    const [AccionABMC, setAccionABMC] = useState("L");
+    const [Nombre, setNombre] = useState("");
+    const [Apellido, setApellido] = useState("");
+    const [Items, setItems] = useState([]);
+    const [Item, setItem] = useState(null);
+
+    const fetchEnologo = useCallback(async () => {
         try {
             const data = await enologoService.Buscar();
             setItems(data);
@@ -21,27 +24,32 @@ function Enologo() {
     }, []);
 
     useEffect(() => {
-        fetchEnologos();
-    }, [fetchEnologos]);
+        fetchEnologo();
+    }, [fetchEnologo]);
 
-    const handleBuscar = useCallback(async (filters) => {
+    const Volver = useCallback(() => {
+        setAccionABMC("L");
+        fetchEnologo();
+    }, [fetchEnologo]);
+
+    const Buscar = useCallback(async () => {
         setAccionABMC("L");
         try {
             let data = await enologoService.Buscar();
-            if (filters.Nombre) {
-                data = data.filter(enologo => enologo.nombre.toLowerCase().includes(filters.Nombre.toLowerCase()));
+            if (Nombre) {
+                data = data.filter(enologo => enologo.nombre.toLowerCase().includes(Nombre.toLowerCase()));
             }
-            if (filters.Apellido) {
-                data = data.filter(enologo => enologo.apellido.toLowerCase().includes(filters.Apellido.toLowerCase()));
+            if (Apellido) {
+                data = data.filter(enologo => enologo.apellido.toLowerCase().includes(Apellido.toLowerCase()));
             }
             setItems(data);
         } catch (error) {
             console.error("Error searching enologos:", error);
         }
-    }, []);
+    }, [Nombre, Apellido]);
 
-    const handleModificar = useCallback(async (id) => {
-        setAccionABMC("M");
+    const BuscarPorId = useCallback(async (id, accionABMC) => {
+        setAccionABMC(accionABMC);
         try {
             const data = await enologoService.BuscarPorId(id);
             setItem(data);
@@ -50,76 +58,85 @@ function Enologo() {
         }
     }, []);
 
-    const handleAgregar = useCallback(() => {
+    const Modificar = useCallback((id) => {
+        BuscarPorId(id, "M");
+    }, [BuscarPorId]);
+
+    const Agregar = useCallback(() => {
         setAccionABMC("A");
         setItem({
-            id: null,
+            id: 0,
             nombre: '',
             apellido: '',
-            fechaNacimiento: moment().format("YYYY-MM-DD")
+            fechaNacimiento: moment(new Date()).format("YYYY-MM-DD")
         });
     }, []);
 
-    const handleEliminar = useCallback(async (id) => {
-        const resp = window.confirm("Está seguro que quiere eliminar el registro?");
-        if (resp) {
-            try {
-                await enologoService.Eliminar(id);
-                fetchEnologos();
-            } catch (error) {
-                console.error("Error deleting enologo:", error);
-            }
-        }
-    }, [fetchEnologos]);
-
-    const handleGrabar = useCallback(async (enologo) => {
+    const Eliminar = useCallback(async (id) => {
         try {
-            await enologoService.Grabar(enologo);
-            alert("Registro " + (accionABMC === "A" ? "agregado" : "modificado") + " correctamente.");
-            setAccionABMC("L");
-            fetchEnologos();
+            await enologoService.Eliminar(id);
+            alert("Registro eliminado correctamente.");
+            Volver();
+        } catch (error) {
+            console.error("Error eliminando enologo:", error);
+        }
+    }, [Volver]);
+
+    const Grabar = useCallback(async (item) => {
+        try {
+            if (AccionABMC === "A") {
+                await enologoService.Agregar(item);
+                alert("Registro agregado correctamente.");
+            } else {
+                await enologoService.Modificar(item);
+                alert("Registro modificado correctamente.");
+            }
+            Volver();
         } catch (error) {
             console.error("Error saving enologo:", error);
         }
-    }, [accionABMC, fetchEnologos]);
-
-    const handleVolver = useCallback(() => {
-        setAccionABMC("L");
-    }, []);
+    }, [AccionABMC, Volver]);
 
     return (
         <div className="container">
             <div className="tituloPagina">
-                Enologos <small>{accionABMC === "L" ? "(Listado)" : "(Agregar / Modificar)"}</small>
+                Enologos
             </div>
 
-            {accionABMC === "L" && (
-                <>
-                    <div className="search-container">
-                        <EnologoBuscar onBuscar={handleBuscar} onAgregar={handleAgregar} />
-                    </div>
-                    <div className="table-container">
-                        <EnologoListado
-                            items={items}
-                            onModificar={handleModificar}
-                            onEliminar={handleEliminar}
-                        />
-                        {items.length === 0 && (
-                            <div className="alert alert-info mensajesAlert">
-                                <i className="fa fa-exclamation-sign"></i> No se encontraron registros...
-                            </div>
-                        )}
-                    </div>
-                </>
-            )}
+            <div className="search-container">
+                <EnologoBuscar
+                    Nombre={Nombre}
+                    setNombre={setNombre}
+                    Apellido={Apellido}
+                    setApellido={setApellido}
+                    Buscar={Buscar}
+                    Agregar={Agregar}
+                />
+            </div>
 
-            {(accionABMC === "A" || accionABMC === "M" || accionABMC === "C") && (
+            {AccionABMC !== "L" && (
                 <div className="form-container">
                     <EnologoRegistro
-                        item={item}
-                        onGrabar={handleGrabar}
-                        onVolver={handleVolver}
+                        AccionABMC={AccionABMC}
+                        Item={Item}
+                        setItem={setItem}
+                        Grabar={Grabar}
+                        Volver={Volver}
                     />
+                </div>
+            )}
+
+            <div className="table-container">
+                <EnologoListado
+                    Items={Items}
+                    Modificar={Modificar}
+                    Eliminar={Eliminar}
+                />
+            </div>
+
+            {Items.length === 0 && (
+                <div className="alert alert-info mensajesAlert">
+                    <i className="fa fa-exclamation-sign"></i> No se encontraron registros...
                 </div>
             )}
         </div>
