@@ -3,14 +3,29 @@ const router = express.Router();
 const { Cliente } = require("../base-orm/sequelize-init");
 const { Op, ValidationError } = require("sequelize");
 
-// Endpoint para todos los clientes
+// Endpoint para filtrar clientes por nombre
 router.get('/cliente', async (req, res) => {
+    const { nombre } = req.query;
+
     try {
-        const clientes = await Cliente.findAll();
-        res.json(clientes);
+        if (!nombre) {
+            // Si no se proporciona el parámetro 'nombre', buscar todos los clientes
+            const clientes = await Cliente.findAll();
+            res.json(clientes);
+        } else {
+            // Si se proporciona el parámetro 'nombre', filtrar por ese nombre
+            const clientes = await Cliente.findAll({
+                where: {
+                    nombre: {
+                        [Op.like]: `%${nombre}%`
+                    }
+                }
+            });
+            res.json(clientes);
+        }
     } catch (error) {
-        console.error('Error al obtener los clientes:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
+        console.error('Error al buscar clientes:', error);
+        res.status(500).json({ error: 'Error al buscar clientes' });
     }
 });
 

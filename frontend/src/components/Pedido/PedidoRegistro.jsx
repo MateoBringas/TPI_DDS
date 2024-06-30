@@ -1,90 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import '../Paginas.css';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { pedidoService } from '../../services/Pedido.service';
 
-const PedidoRegistro = ({ pedido, onSave }) => {
-    const [form, setForm] = useState({
-        id: pedido ? pedido.id : '',
-        fechaPedido: pedido ? pedido.fechaPedido : '',
-        ClienteId: pedido ? pedido.ClienteId : '',
-        comentarios: pedido ? pedido.comentarios : '',
-    });
+const PedidoRegistro = ({ pedido, onClose, onSave, clientes }) => {
+  const { register, handleSubmit, reset } = useForm({
+    defaultValues: pedido || {}
+  });
 
-    useEffect(() => {
-        if (pedido) {
-            setForm({
-                id: pedido.id,
-                fechaPedido: pedido.fechaPedido,
-                ClienteId: pedido.ClienteId,
-                comentarios: pedido.comentarios,
-            });
-        } else {
-            setForm({
-                id: '',
-                fechaPedido: '',
-                ClienteId: '',
-                comentarios: '',
-            });
-        }
-    }, [pedido]);
+  const onSubmit = async (data) => {
+    const existe = pedido ? true : false;
+    const id = pedido ? pedido.id : null;
+    await pedidoService.Grabar(id, data, existe);
+    onSave();
+    onClose();
+  };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setForm({ ...form, [name]: value });
-    };
+  useEffect(() => {
+    reset(pedido || {});
+  }, [pedido, reset]);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSave(form);
-    };
+  const today = new Date().toISOString().split('T')[0];
 
-    return (
-        <div className="container form-container">
-            <form onSubmit={handleSubmit} className="form">
-                {form.id && (
-                    <div className="form-input">
-                        <label>ID:</label>
-                        <input
-                            type="text"
-                            name="id"
-                            value={form.id}
-                            readOnly
-                            className="form-input"
-                        />
-                    </div>
-                )}
-                <div className="form-input">
-                    <label>Fecha de Pedido:</label>
-                    <input
-                        type="date"
-                        name="fechaPedido"
-                        value={form.fechaPedido}
-                        onChange={handleChange}
-                        className="form-input"
-                    />
-                </div>
-                <div className="form-input">
-                    <label>Cliente ID:</label>
-                    <input
-                        type="text"
-                        name="ClienteId"
-                        value={form.ClienteId}
-                        onChange={handleChange}
-                        className="form-input"
-                    />
-                </div>
-                <div className="form-input">
-                    <label>Comentarios:</label>
-                    <textarea
-                        name="comentarios"
-                        value={form.comentarios}
-                        onChange={handleChange}
-                        className="form-input"
-                    />
-                </div>
-                <button type="submit" className="form-button">Guardar</button>
-            </form>
+  return (
+    <div className="form-input">
+      <h3>{pedido ? 'Editar' : 'Registrar'} Pedido</h3>
+      <form className='form' onSubmit={handleSubmit(onSubmit)}>
+        <input
+          className="form-input"
+          {...register("fechaPedido", { required: true })}
+          type="date"
+          max={today}
+          placeholder="Fecha de Pedido"
+        />
+        <select className="form-input" {...register("ClienteId", { required: true })}>
+          <option value="">Seleccione un cliente</option>
+          {clientes.map(cliente => (
+            <option key={cliente.id} value={cliente.id}>
+              {cliente.nombre} {cliente.apellido}
+            </option>
+          ))}
+        </select>
+        <textarea className="form-input" {...register("comentarios")} placeholder="Comentarios"></textarea>
+        <div>
+          <button className="form-button" type="submit">{pedido ? 'Guardar Cambios' : 'Registrar'}</button>
+          <button className="form-button" type="button" onClick={onClose}>Cancelar</button>
         </div>
-    );
+      </form>
+    </div>
+  );
 };
 
 export default PedidoRegistro;

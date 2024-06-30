@@ -1,91 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import '../Paginas.css';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { clienteService } from '../../services/Cliente.service';
 
-const ClienteRegistro = ({ cliente, onSave }) => {
-    const [form, setForm] = useState({
-        id: cliente ? cliente.id : '',
-        nombre: cliente ? cliente.nombre : '',
-        apellido: cliente ? cliente.apellido : '',
-        fechaRegistro: cliente ? cliente.fechaRegistro : '',
-    });
+const ClienteRegistro = ({ cliente, onClose, onSave }) => {
+  const { register, handleSubmit, reset } = useForm({
+    defaultValues: cliente || {}
+  });
 
-    useEffect(() => {
-        if (cliente) {
-            setForm({
-                id: cliente.id,
-                nombre: cliente.nombre,
-                apellido: cliente.apellido,
-                fechaRegistro: cliente.fechaRegistro,
-            });
-        } else {
-            setForm({
-                id: '',
-                nombre: '',
-                apellido: '',
-                fechaRegistro: '',
-            });
-        }
-    }, [cliente]);
+  const onSubmit = async (data) => {
+    const existe = cliente ? true : false;
+    const id = cliente ? cliente.id : null;
+    clienteService.Grabar(id, data, existe);
+      onSave(); // Llama a la función onSave para actualizar la lista de clientes
+      onClose();
+    }
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setForm({ ...form, [name]: value });
-    };
+  useEffect(() => {
+    reset(cliente || {});
+  }, [cliente, reset]);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSave(form);
-    };
+  const today = new Date().toISOString().split('T')[0];
 
-    return (
-        <div className="container form-container">
-            <form onSubmit={handleSubmit} className="form">
-                {form.id && (
-                    <div className="form-input">
-                        <label>ID:</label>
-                        <input
-                            type="text"
-                            name="id"
-                            value={form.id}
-                            readOnly
-                            className="form-input"
-                        />
-                    </div>
-                )}
-                <div className="form-input">
-                    <label>Nombre:</label>
-                    <input
-                        type="text"
-                        name="nombre"
-                        value={form.nombre}
-                        onChange={handleChange}
-                        className="form-input"
-                    />
-                </div>
-                <div className="form-input">
-                    <label>Apellido:</label>
-                    <input
-                        type="text"
-                        name="apellido"
-                        value={form.apellido}
-                        onChange={handleChange}
-                        className="form-input"
-                    />
-                </div>
-                <div className="form-input">
-                    <label>Fecha de Registro:</label>
-                    <input
-                        type="date"
-                        name="fechaRegistro"
-                        value={form.fechaRegistro}
-                        onChange={handleChange}
-                        className="form-input"
-                    />
-                </div>
-                <button type="submit" className="form-button">Guardar</button>
-            </form>
-        </div>
-    );
+  return (
+    <div className="form-input">
+      <h3>{cliente ? 'Editar' : 'Registrar'} Cliente</h3>
+      <form className='form' onSubmit={handleSubmit(onSubmit)}>
+        <input className="form-input" {...register("nombre", { required: true })} placeholder="Nombre" />
+        <input className="form-input" {...register("apellido", { required: true })} placeholder="Apellido" />
+        <input className="form-input" {...register("fechaRegistro", { required: true })} type="date" max={today} placeholder="Fecha de registro" />
+          <div>
+            <button className="form-button" type="submit">{cliente ? 'Guardar Cambios' : 'Registrar'}</button>
+            <button className="form-button" type="button" onClick={onClose}>Cancelar</button>
+          </div>
+      </form>
+    </div>
+  );
 };
 
 export default ClienteRegistro;

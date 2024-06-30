@@ -1,54 +1,83 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import PedidoListado from './PedidoListado';
-import PedidoBuscar from './PedidoBuscar';
 import PedidoRegistro from './PedidoRegistro';
-import '../Paginas.css';
 import { pedidoService } from '../../services/Pedido.service';
+import { clienteService } from '../../services/Cliente.service';
 
 const Pedido = () => {
-    const [pedidos, setPedidos] = useState([]);
-    const [selectedPedido, setSelectedPedido] = useState(null);
+  const { register, handleSubmit } = useForm();
+  const [pedidos, setPedidos] = useState([]);
+  const [clientes, setClientes] = useState([]);
+  const [editingPedido, setEditingPedido] = useState(null);
+  const [showRegistro, setShowRegistro] = useState(false);
+  const [formKey, setFormKey] = useState(0);
 
-    const fetchPedidos = async () => {
-        const data = await pedidoService.Buscar();
-        setPedidos(data);
-    };
+  const buscarPedidos = async (comentarios) => {
+    console.log(comentarios);
+    setPedidos(await pedidoService.Buscar(comentarios));
+  };
 
-    useEffect(() => {
-        fetchPedidos();
-    }, []);
+  const fetchClientes = async () => {
+    const clientesData = await clienteService.Buscar();
+    setClientes(clientesData);
+  };
+  
 
-    const handleSearch = (query) => {
-        const filteredPedidos = pedidos.filter(pedido => pedido.comentarios.toLowerCase().includes(query.toLowerCase()));
-        setPedidos(filteredPedidos);
-    };
+  const agregarPedido = () => {
+    setEditingPedido(null);
+    setFormKey(prevKey => prevKey + 1);
+    setShowRegistro(true);
+  };
 
-    const handleSelect = (pedido) => {
-        setSelectedPedido(pedido);
-    };
+  const editarPedido = (pedido) => {
+    setEditingPedido(pedido);
+    setFormKey(prevKey => prevKey + 1);
+    setShowRegistro(true);
+  };
 
-    const handleSave = async (pedido) => {
-        await pedidoService.Grabar(pedido);
-        fetchPedidos();
-        setSelectedPedido(null);
-    };
-    const handleDelete = async (id) => {
-        try {
-            await pedidoService.Eliminar(id);
-            fetchPedidos();
-        } catch (error) {
-            console.error('Error al eliminar el pedido:', error);
-        }
-    };
+  const eliminarPedido = async (id) => {
+    const Eliminado = await pedidoService.Eliminar(id);
+    if (Eliminado)
+      setPedidos(pedidos.filter(pedido => pedido.id !== id));
+  };
 
-    return (
-        <div>
-            <h1 style={{ textAlign: 'center' }}>Pedidos</h1>
-            <PedidoBuscar onSearch={handleSearch} />
-            <PedidoListado pedidos={pedidos} onSelect={handleSelect} onDelete={handleDelete} />
-            <PedidoRegistro pedido={selectedPedido} onSave={handleSave} />
-        </div>
-    );
+  const guardarPedido = () => {
+    buscarPedidos();
+  };
+
+  useEffect(() => {
+    buscarPedidos();
+    fetchClientes();
+  }, []);
+
+  return (
+    <div className="container">
+      <h1 className="center-title">Pedidos</h1>
+      <form onSubmit={handleSubmit((data) => buscarPedidos(data.comentarios))}>
+        <input className="search-input" {...register('comentarios')} placeholder='Comentarios'/>
+        <button className="form-button" type='submit'>Buscar</button>
+      </form>
+      <button className="form-button agregar" onClick={agregarPedido}>Agregar Pedido</button>
+      
+      <PedidoListado 
+        pedidos={pedidos} 
+        onEdit={editarPedido} 
+        onDelete={eliminarPedido}
+        clientes={clientes} 
+      />
+
+      {showRegistro && (
+        <PedidoRegistro 
+          key={formKey} 
+          pedido={editingPedido} 
+          onClose={() => setShowRegistro(false)} 
+          onSave={guardarPedido}
+          clientes={clientes} 
+        />
+      )}
+    </div>
+  );
 };
 
 export default Pedido;
