@@ -6,7 +6,6 @@ const VinoRegistro = ({ vino, onSave, bodegas }) => {
   const {
     register,
     handleSubmit,
-    setValue,
     reset,
     formState: { errors },
   } = useForm({

@@ -101,6 +101,7 @@ const Resenia = sequelize.define(
     { timestamps: false }
 );
 
+
 // Definición del modelo de Bodega
 const Bodega = sequelize.define(
     'Bodega',
@@ -281,7 +282,8 @@ const Pedido = sequelize.define(
     { timestamps: false }
 );
 
-Resenia.belongsTo(Enologo, { foreignKey: 'EnologoId' });
+Enologo.hasMany(Resenia, { foreignKey: 'enologoId', onDelete: 'CASCADE' });
+Resenia.belongsTo(Enologo, { foreignKey: 'enologoId' });
 
 // Exportación de los modelos
 module.exports = {

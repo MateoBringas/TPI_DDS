@@ -6,7 +6,6 @@ const BodegaRegistro = ({ bodega, onSave }) => {
   const {
     register,
     handleSubmit,
-    setValue,
     reset,
     formState: { errors },
   } = useForm({
