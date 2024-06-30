@@ -98,6 +98,10 @@
     opacity: 0.8;
 }
 
+.agregar{
+    margin-top: 20px;
+  }
+  
 .tituloPagina {
     text-align: center;
     font-size: 24px;
