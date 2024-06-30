@@ -1,32 +1,67 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React from "react";
 
-function EnologoBuscar({ onBuscar, onAgregar }) {
-    const { register, handleSubmit } = useForm();
-
-    const onSubmit = (data) => {
-        onBuscar(data);
-    };
-
+export default function EnologoBuscar({
+                                          Nombre,
+                                          setNombre,
+                                          Apellido,
+                                          setApellido,
+                                          Buscar,
+                                          Agregar
+                                      }) {
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="form">
-            <input
-                type="text"
-                placeholder="Nombre"
-                {...register("Nombre")}
-                className="search-input"
-            />
-            <input
-                type="text"
-                placeholder="Apellido"
-                {...register("Apellido")}
-                className="search-input"
-            />
-            <button type="submit" className="form-button">Buscar</button>
-            <br/>
-            <button type="button" onClick={onAgregar} className="form-button">Agregar</button>
+        <form name="FormBusqueda">
+            <div className="container-fluid">
+                <div className="row">
+                    <div className="col-sm-4 col-md-2">
+                        <label className="col-form-label">Nombre:</label>
+                    </div>
+                    <div className="col-sm-8 col-md-4">
+                        <input
+                            type="text"
+                            className="form-input"
+                            onChange={(e) => setNombre(e.target.value)}
+                            value={Nombre}
+                            maxLength="55"
+                            autoFocus
+                        />
+                    </div>
+                    <div className="col-sm-4 col-md-2">
+                        <label className="col-form-label">Apellido:</label>
+                    </div>
+                    <div className="col-sm-8 col-md-4">
+                        <input
+                            type="text"
+                            className="form-input"
+                            onChange={(e) => setApellido(e.target.value)}
+                            value={Apellido}
+                            maxLength="55"
+                            autoFocus
+                        />
+                    </div>
+                </div>
+
+                <hr />
+
+                {/* Botones */}
+                <div className="row">
+                    <div className="col text-center">
+                        <button
+                            type="button"
+                            className="form-button"
+                            onClick={() => Buscar()}
+                        >
+                            <i className="fa fa-search"></i> Buscar
+                        </button>
+                        <button
+                            type="button"
+                            className="form-button"
+                            onClick={() => Agregar()}
+                        >
+                            <i className="fa fa-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </div>
         </form>
     );
 }
-
-export default EnologoBuscar;

@@ -1,31 +1,26 @@
-import axios from "axios";
-const urlResource = "http://localhost:4000/enologo";
+import axios from 'axios';
 
-async function Buscar() {
-    const resp = await axios.get(urlResource);
-    return resp.data;
-}
-
-async function BuscarPorId(id) {
-    const resp = await axios.get(`${urlResource}/${id}`);
-    return resp.data;
-}
-
-async function Eliminar(id) {
-    await axios.delete(`${urlResource}/${id}`);
-}
-
-async function Grabar(item) {
-    if (item.id === 100) {
-        await axios.post(urlResource, item);
-    } else {
-        await axios.put(`${urlResource}/${item.id}`, item);
-    }
-}
+const API_URL = 'http://localhost:4000/enologo';
 
 export const enologoService = {
-    Buscar,
-    BuscarPorId,
-    Eliminar,
-    Grabar
+    Buscar: async () => {
+        const response = await axios.get(API_URL);
+        return response.data;
+    },
+    BuscarPorId: async (id) => {
+        const response = await axios.get(`${API_URL}/${id}`);
+        return response.data;
+    },
+    Agregar: async (enologo) => {
+        const response = await axios.post(API_URL, enologo);
+        return response.data;
+    },
+    Modificar: async (enologo) => {
+        const response = await axios.put(`${API_URL}/${enologo.id}`, enologo);
+        return response.data;
+    },
+    Eliminar: async (id) => {
+        const response = await axios.delete(`${API_URL}/${id}`);
+        return response.data;
+    }
 };

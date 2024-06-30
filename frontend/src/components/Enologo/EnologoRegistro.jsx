@@ -1,83 +1,97 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React from "react";
 
-function EnologoRegistro({ item, onGrabar, onVolver }) {
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm();
-
-    React.useEffect(() => {
-        if (item) {
-            setValue("id", item.id);
-            setValue("nombre", item.nombre);
-            setValue("apellido", item.apellido);
-            setValue("fechaNacimiento", item.fechaNacimiento);
-        }
-    }, [item, setValue]);
-
-    const onSubmit = (data) => {
-        // Eliminar el campo id si no existe
-        if (!item) {
-            delete data.id;
-        }
-        onGrabar(data);
-    };
+export default function EnologoRegistro({
+                                            AccionABMC,
+                                            Item,
+                                            setItem,
+                                            Grabar,
+                                            Volver,
+                                        }) {
+    if (!Item) return null;
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="form">
-            {item && (
-                <input
-                    type="hidden"
-                    {...register("id")}
-                />
-            )}
-            <input
-                type="text"
-                placeholder="Nombre"
-                {...register("nombre", {
-                    required: "El nombre es obligatorio",
-                    pattern: {
-                        value: /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/,
-                        message: "El nombre solo puede contener letras"
-                    }
-                })}
-                className="form-input"
-            />
-            {errors.nombre && <p>{errors.nombre.message}</p>}
+        <form>
+            <div className="container-fluid">
+                <fieldset disabled={AccionABMC === "C"}>
+                    <div className="row">
+                        <div className="col-sm-4 col-md-3 offset-md-1">
+                            <label className="col-form-label" htmlFor="nombre">
+                                Nombre<span className="text-danger">*</span>:
+                            </label>
+                        </div>
+                        <div className="col-sm-8 col-md-6">
+                            <input
+                                type="text"
+                                name="nombre"
+                                value={Item?.nombre}
+                                autoFocus
+                                className="form-input"
+                                onChange={(e) => setItem({ ...Item, nombre: e.target.value })}
+                            />
+                        </div>
+                    </div>
 
-            <input
-                type="text"
-                placeholder="Apellido"
-                {...register("apellido", {
-                    required: "El apellido es obligatorio",
-                    pattern: {
-                        value: /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/,
-                        message: "El apellido solo puede contener letras"
-                    }
-                })}
-                className="form-input"
-            />
-            {errors.apellido && <p>{errors.apellido.message}</p>}
+                    {/* campo Apellido */}
+                    <div className="row">
+                        <div className="col-sm-4 col-md-3 offset-md-1">
+                            <label className="col-form-label" htmlFor="apellido">
+                                Apellido<span className="text-danger">*</span>:
+                            </label>
+                        </div>
+                        <div className="col-sm-8 col-md-6">
+                            <input
+                                type="text"
+                                name="apellido"
+                                value={Item?.apellido}
+                                className="form-input"
+                                onChange={(e) => setItem({ ...Item, apellido: e.target.value })}
+                            />
+                        </div>
+                    </div>
 
-            <input
-                type="date"
-                {...register("fechaNacimiento", {
-                    validate: value => {
-                        const selectedDate = new Date(value);
-                        const currentDate = new Date();
-                        // Clear the time portion of the dates for comparison
-                        selectedDate.setHours(0, 0, 0, 0);
-                        currentDate.setHours(0, 0, 0, 0);
-                        return selectedDate < currentDate || "La fecha debe ser anterior a la fecha actual";
-                    }
-                })}
-                className="form-input"
-            />
-            {errors.fechaNacimiento && <p>{errors.fechaNacimiento.message}</p>}
+                    {/* campo Fecha de Nacimiento */}
+                    <div className="row">
+                        <div className="col-sm-4 col-md-3 offset-md-1">
+                            <label className="col-form-label" htmlFor="fechaNacimiento">
+                                Fecha de Nacimiento<span className="text-danger">*</span>:
+                            </label>
+                        </div>
+                        <div className="col-sm-8 col-md-6">
+                            <input
+                                type="date"
+                                name="fechaNacimiento"
+                                className="form-input"
+                                value={Item?.fechaNacimiento}
+                                onChange={(e) => setItem({ ...Item, fechaNacimiento: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                </fieldset>
 
-            <button type="submit" className="form-button">Grabar</button>
-            <br/>
-            <button type="button" onClick={onVolver} className="form-button">Volver</button>
+                {/* Botones Grabar, Cancelar/Volver */}
+                <hr />
+                <div className="row justify-content-center">
+                    <div className="col text-center">
+                        {AccionABMC !== "C" && (
+                            <button
+                                type="submit"
+                                className="form-button"
+                                onClick={(e) => { e.preventDefault(); Grabar(Item); }}
+                            >
+                                <i className="fa fa-check"></i> Grabar
+                            </button>
+                        )}
+                        <button
+                            type="button"
+                            className="form-button"
+                            onClick={Volver}
+                        >
+                            <i className="fa fa-undo"></i>
+                            {AccionABMC === "C" ? " Volver" : " Cancelar"}
+                        </button>
+                    </div>
+                </div>
+            </div>
         </form>
     );
 }
-
-export default EnologoRegistro;
