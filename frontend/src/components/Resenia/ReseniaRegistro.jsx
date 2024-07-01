@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 export default function ReseniaRegistro({
@@ -9,9 +9,13 @@ export default function ReseniaRegistro({
                                             Volver,
                                             Enologos = [] // Asegúrate de que Enologos siempre sea una lista
                                         }) {
-    const { register, handleSubmit, formState: { errors } } = useForm({
+    const { register, handleSubmit, formState: { errors }, reset } = useForm({
         defaultValues: Item,
     });
+
+    useEffect(() => {
+        reset(Item);
+    }, [Item, reset]);
 
     const isEditing = AccionABMC === "M";
     const title = isEditing ? "Editar Reseña" : "Agregar Nueva Reseña";
