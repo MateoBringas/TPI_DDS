@@ -1,61 +1,45 @@
-import React from "react";
+import React from 'react';
 
-export default function ReseniaListado({
-                                           Items = [],   // Establecer un valor predeterminado vacío
-                                           Enologos = [], // Establecer un valor predeterminado vacío
-                                           Modificar,
-                                           Eliminar,
-                                       }) {
+const ReseniaListado = ({ resenias, onEdit, onDelete, enologos }) => {
     return (
-        <div className="table-responsive">
-            <table className="table">
+        <div className='container table-container'>
+            <h3>Listado de Reseñas</h3>
+            <table className='table'>
                 <thead>
                 <tr>
-                    <th className="text-center">Puntuación</th>
-                    <th className="text-center">Comentario</th>
-                    <th className="text-center">Fecha</th>
-                    <th className="text-center">Enólogo</th>
-                    <th className="text-center text-nowrap">Acciones</th>
+                    <th>Puntuación</th>
+                    <th>Comentario</th>
+                    <th>Fecha</th>
+                    <th>Enólogo</th> {/* Cambiado de "ID Enólogo" a "Enólogo" */}
+                    <th>Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
-                {Items.length > 0 ? (
-                    Items.map((item) => {
-                        const enologo = Enologos.find(enologo => enologo.id === item.EnologoId);
+                {resenias.length > 0 ? (
+                    resenias.map((resenia) => {
+                        const enologo = enologos.find(enologo => enologo.id === resenia.EnologoId);
                         return (
-                            <tr key={item.id}>
-                                <td className="text-center">{item.puntuacion}</td>
-                                <td className="text-center">{item.comentario}</td>
-                                <td className="text-center">{item.fecha}</td>
-                                <td className="text-center">
-                                    {enologo ? `${enologo.nombre} ${enologo.apellido}` : "No disponible"}
-                                </td>
-                                <td className="text-center text-nowrap">
-                                    <button
-                                        className="edit-button"
-                                        title="Modificar"
-                                        onClick={() => Modificar(item.id)}
-                                    >
-                                        <i className="fa fa-pencil"></i> Modificar
-                                    </button>
-                                    <button
-                                        className="delete-button"
-                                        title="Eliminar"
-                                        onClick={() => Eliminar(item.id)}
-                                    >
-                                        <i className="fa fa-times"></i> Eliminar
-                                    </button>
+                            <tr key={resenia.id}>
+                                <td>{resenia.puntuacion}</td>
+                                <td>{resenia.comentario}</td>
+                                <td>{new Date(resenia.fecha).toLocaleDateString()}</td>
+                                <td>{enologo ? `${enologo.nombre} ${enologo.apellido}` : 'Enólogo no encontrado'}</td>
+                                <td>
+                                    <button className="edit-button" onClick={() => onEdit(resenia)}>Editar</button>
+                                    <button className="delete-button" onClick={() => onDelete(resenia.id)}>Eliminar</button>
                                 </td>
                             </tr>
                         );
                     })
                 ) : (
                     <tr>
-                        <td colSpan="5" className="text-center">No hay reseñas disponibles.</td>
+                        <td colSpan='6'>No se encontraron reseñas</td>
                     </tr>
                 )}
                 </tbody>
             </table>
         </div>
     );
-}
+};
+
+export default ReseniaListado;
