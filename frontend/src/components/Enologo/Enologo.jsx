@@ -10,6 +10,7 @@ import "../Paginas.css";
 function Enologo() {
     const [AccionABMC, setAccionABMC] = useState("L");
     const [Nombre, setNombre] = useState("");
+    const [Apellido, setApellido] = useState("");
     const [Items, setItems] = useState([]);
     const [Item, setItem] = useState(null);
     const [popupMessage, setPopupMessage] = useState(""); // Estado para el mensaje del Popup
@@ -130,6 +131,8 @@ function Enologo() {
                 <EnologoBuscar
                     Nombre={Nombre}
                     setNombre={setNombre}
+                    Apellido={Apellido}
+                    setApellido={setApellido}
                     Buscar={Buscar}
                     Agregar={Agregar}
                 />

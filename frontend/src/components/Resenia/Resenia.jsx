@@ -1,62 +1,65 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import moment from "moment";
 import { reseniaService } from "../../services/Resenia.service";
 import { enologoService } from "../../services/Enologo.service";
+
 import ReseniaBuscar from "./ReseniaBuscar";
 import ReseniaListado from "./ReseniaListado";
 import ReseniaRegistro from "./ReseniaRegistro";
-import '../Paginas.css'; // Ruta del archivo CSS
+import "../Paginas.css";
 
 function Resenia() {
     const [AccionABMC, setAccionABMC] = useState("L");
-    const [Puntuacion, setPuntuacion] = useState("");
     const [Comentario, setComentario] = useState("");
     const [Items, setItems] = useState([]);
     const [Item, setItem] = useState(null);
     const [Enologos, setEnologos] = useState([]);
 
-    const fetchResenias = useCallback(async () => {
-        try {
-            const data = await reseniaService.Buscar();
-            setItems(data);
-        } catch (error) {
-            console.error("Error fetching reseñas:", error);
-        }
-    }, []);
-
     const fetchEnologos = useCallback(async () => {
         try {
-            const data = await enologoService.Buscar(); // Asumiendo que tienes un servicio para obtener enólogos
+            const data = await enologoService.Buscar();
             setEnologos(data);
         } catch (error) {
-            console.error("Error fetching enólogos:", error);
+            console.error("Error fetching enologos:", error);
         }
     }, []);
 
     useEffect(() => {
-        fetchResenias();
         fetchEnologos();
-    }, [fetchResenias, fetchEnologos]);
+    }, [fetchEnologos]);
+
+    const fetchResenia = useCallback(async () => {
+        try {
+            const data = await reseniaService.Buscar();
+            setItems(data);
+        } catch (error) {
+            console.error("Error fetching resenias:", error);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchResenia();
+    }, [fetchResenia]);
 
     const Volver = useCallback(() => {
         setAccionABMC("L");
-        fetchResenias();
-    }, [fetchResenias]);
+        fetchResenia();
+    }, [fetchResenia]);
 
     const Buscar = useCallback(async () => {
         setAccionABMC("L");
         try {
             let data = await reseniaService.Buscar();
-            if (Puntuacion) {
-                data = data.filter(resenia => resenia.puntuacion === parseInt(Puntuacion));
-            }
             if (Comentario) {
-                data = data.filter(resenia => resenia.comentario.toLowerCase().includes(Comentario.toLowerCase()));
+                data = data.filter((Resenia) =>
+                    Resenia.comentario.toLowerCase().includes(Comentario.toLowerCase())
+                );
             }
             setItems(data);
         } catch (error) {
-            console.error("Error searching reseñas:", error);
+            console.error("Error searching resenia:", error);
         }
-    }, [Puntuacion, Comentario]);
+    }, [Comentario]);
 
     const BuscarPorId = useCallback(async (id, accionABMC) => {
         setAccionABMC(accionABMC);
@@ -64,60 +67,66 @@ function Resenia() {
             const data = await reseniaService.BuscarPorId(id);
             setItem(data);
         } catch (error) {
-            console.error("Error fetching resenia by id:", error);
+            console.error("Error fetching resenia con id:", error);
         }
     }, []);
 
-    const Modificar = useCallback((id) => {
-        BuscarPorId(id, "M");
-    }, [BuscarPorId]);
+    const Modificar = useCallback(
+        (id) => {
+            BuscarPorId(id, "M");
+        },
+        [BuscarPorId]
+    );
 
     const Agregar = useCallback(() => {
         setAccionABMC("A");
         setItem({
             id: 0,
-            puntuacion: 1,
-            comentario: '',
-            fecha: new Date().toISOString().split('T')[0],
-            EnologoId: Enologos.length > 0 ? Enologos[0].id : 0
+            puntuacion: 0,
+            comentario: "",
+            fecha: moment(new Date()).format("YYYY-MM-DD"),
+            EnologoId: 0,
         });
-    }, [Enologos]);
+    }, []);
 
-    const Eliminar = useCallback(async (id) => {
-        try {
-            await reseniaService.Eliminar(id);
-            alert("Registro eliminado correctamente.");
-            Volver();
-        } catch (error) {
-            console.error("Error eliminando resenia:", error);
-        }
-    }, [Volver]);
-
-    const Grabar = useCallback(async (item) => {
-        try {
-            if (AccionABMC === "A") {
-                await reseniaService.Agregar(item);
-                alert("Registro agregado correctamente.");
-            } else {
-                await reseniaService.Modificar(item);
-                alert("Registro modificado correctamente.");
+    const Eliminar = useCallback(
+        async (id) => {
+            try {
+                await reseniaService.Eliminar(id);
+                alert("Reseña eliminada correctamente.");
+                Volver();
+            } catch {
+                alert("No se puede eliminar la reseña porque está siendo utilizada.");
             }
-            Volver();
-        } catch (error) {
-            console.error("Error saving resenia:", error);
-        }
-    }, [AccionABMC, Volver]);
+        },
+        [Volver]
+    );
+
+    const Grabar = useCallback(
+        async (item) => {
+            try {
+                if (AccionABMC === "A") {
+                    await reseniaService.Agregar(item);
+                    alert("Reseña agregada correctamente.");
+                } else {
+                    await reseniaService.Modificar(item);
+                    alert("Reseña modificada correctamente.");
+                }
+                Volver();
+            } catch (error) {
+                console.log(item);
+                console.error("Error saving resenia:", error);
+            }
+        },
+        [AccionABMC, Volver]
+    );
 
     return (
         <div className="container">
-            <div className="tituloPagina">
-                Reseñas
-            </div>
+            <div className="tituloPagina">Reseña</div>
 
             <div className="search-container">
                 <ReseniaBuscar
-                    Puntuacion={Puntuacion}
-                    setPuntuacion={setPuntuacion}
                     Comentario={Comentario}
                     setComentario={setComentario}
                     Buscar={Buscar}
@@ -139,17 +148,12 @@ function Resenia() {
             )}
 
             <div className="table-container">
-                <ReseniaListado
-                    Items={Items}
-                    Enologos={Enologos}
-                    Modificar={Modificar}
-                    Eliminar={Eliminar}
-                />
+                <ReseniaListado Items={Items} Modificar={Modificar} Eliminar={Eliminar} />
             </div>
 
             {Items.length === 0 && (
                 <div className="alert alert-info mensajesAlert">
-                    <i className="fa fa-exclamation-sign"></i> No se encontraron registros...
+                    <i className="fa fa-exclamation-sign"></i> No se encontraron reseñas...
                 </div>
             )}
         </div>

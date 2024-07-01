@@ -1,31 +1,31 @@
 import React from "react";
+import { useForm } from "react-hook-form";
 
-export default function ReseniaBuscar({
-                                          Puntuacion,
-                                          setPuntuacion,
-                                          Comentario,
-                                          setComentario,
-                                          Buscar,
-                                          Agregar
-                                      }) {
+export default function ReseniaBuscar({ Comentario, setComentario, Buscar, Agregar }) {
+    const { register, handleSubmit, setValue } = useForm();
+
+    const onSubmit = () => {
+        Buscar();
+    };
+
+    const handleAgregarClick = () => {
+        Agregar();
+    };
+
+    const handleChangeComentario = (e) => {
+        const value = e.target.value;
+        setComentario(value);
+        setValue("comentario", value);
+    };
+
     return (
-        <form name="FormBusqueda" className="search-container">
+        <form
+            name="FormBusqueda"
+            className="search-container"
+            onSubmit={handleSubmit(onSubmit)}
+        >
             <div className="container-fluid">
                 <div className="row">
-                    <div className="col-sm-6">
-                        <label className="col-form-label" htmlFor="puntuacion">
-                            Puntuación:
-                        </label>
-                        <input
-                            type="number"
-                            className="form-control search-input"
-                            id="puntuacion"
-                            onChange={(e) => setPuntuacion(e.target.value)}
-                            value={Puntuacion}
-                            min="1"
-                            max="5"
-                        />
-                    </div>
                     <div className="col-sm-6">
                         <label className="col-form-label" htmlFor="comentario">
                             Comentario:
@@ -34,9 +34,11 @@ export default function ReseniaBuscar({
                             type="text"
                             className="form-control search-input"
                             id="comentario"
-                            onChange={(e) => setComentario(e.target.value)}
+                            {...register("comentario")}
+                            onChange={handleChangeComentario}
                             value={Comentario}
                             maxLength="255"
+                            autoFocus
                         />
                     </div>
                 </div>
@@ -47,18 +49,17 @@ export default function ReseniaBuscar({
                 <div className="row">
                     <div className="col text-center botones">
                         <button
-                            type="button"
+                            type="submit" // Usa submit para manejar el formulario
                             className="btn btn-primary form-button"
-                            onClick={Buscar}
                         >
-                            <i className="fa fa-search"> </i> Buscar
+                            <i className="fa fa-search"></i> Buscar
                         </button>
                         <button
                             type="button"
                             className="btn btn-primary form-button"
-                            onClick={Agregar}
+                            onClick={handleAgregarClick} // Maneja el click para agregar
                         >
-                            <i className="fa fa-plus"> </i> Agregar
+                            <i className="fa fa-plus"></i> Agregar
                         </button>
                     </div>
                 </div>
