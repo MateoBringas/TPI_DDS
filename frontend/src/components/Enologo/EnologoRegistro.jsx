@@ -1,43 +1,117 @@
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { enologoService } from '../../services/Enologo.service';
+import React, {useEffect} from "react";
+import { useForm } from "react-hook-form";
 
-const EnologoRegistro = ({ enologo, onClose, onSave }) => {
-    const { register, handleSubmit, reset } = useForm({
-        defaultValues: enologo || {}
+export default function EnologoRegistro({
+                                            AccionABMC,
+                                            Item,
+                                            setItem,
+                                            Grabar,
+                                            Volver,
+                                        }) {
+    const { register, handleSubmit, reset, formState: { errors } } = useForm({
+        defaultValues: Item,
     });
 
-    const onSubmit = async (data) => {
-        const existe = enologo ? true : false;
-        const id = enologo ? enologo.id : null;
-        await enologoService.Grabar(id, data, existe);
-        onSave(); // Llama a la función onSave para actualizar la lista de enólogos
-        onClose();
-    };
+    const isEditing = AccionABMC === "M";
+    const title = isEditing ? "Editar Enólogo" : "Agregar Nuevo Enólogo";
 
     useEffect(() => {
-        reset(enologo || {});
-    }, [enologo, reset]);
+        reset(Item);
+    },[reset, Item]);
 
-    const today = new Date().toISOString().split('T')[0];
+    const onSubmit = (data) => {
+        if (new Date(data.fechaNacimiento) >= new Date()) {
+            alert("La fecha de nacimiento debe ser menor a la fecha actual.");
+        } else {
+            Grabar(data);
+        }
+    };
 
     return (
-        <div><br/>
-            <div className="form-input">
-            <h3>{enologo ? 'Editar' : 'Registrar'} Enólogo</h3>
-            <form className='form' onSubmit={handleSubmit(onSubmit)}>
-                <input className="form-input" {...register("nombre", {required: true})} placeholder="Nombre"/>
-                <input className="form-input" {...register("apellido", {required: true})} placeholder="Apellido"/>
-                <input className="form-input" {...register("fechaNacimiento", {required: true})} type="date" max={today}
-                       placeholder="Fecha de Nacimiento"/>
-                <div>
-                    <button className="form-button" type="submit">{enologo ? 'Guardar Cambios' : 'Registrar'}</button>
-                    <button className="form-button" type="button" onClick={onClose}>Cancelar</button>
-                </div>
-            </form>
-        </div>
-        </div>
-    );
-};
+        <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="container-fluid">
+                <h2 className="text-center">{title}</h2>
+                <fieldset disabled={AccionABMC === "C"}>
+                    <div className="row">
+                        <div className="col-sm-4 col-md-3 offset-md-1">
+                            <label className="col-form-label" htmlFor="nombre">
+                                Nombre<span className="text-danger">*</span>:
+                            </label>
+                        </div>
+                        <div className="col-sm-8 col-md-6">
+                            <input
+                                type="text"
+                                name="nombre"
+                                className="form-input"
+                                {...register("nombre", { required: "Nombre es requerido" })}
+                                onChange={(e) => setItem({ ...Item, nombre: e.target.value })}
+                            />
+                            {errors.nombre && <div className="text-danger">{errors.nombre.message}</div>}
+                        </div>
+                    </div>
 
-export default EnologoRegistro;
+                    {/* campo Apellido */}
+                    <div className="row">
+                        <div className="col-sm-4 col-md-3 offset-md-1">
+                            <label className="col-form-label" htmlFor="apellido">
+                                Apellido<span className="text-danger">*</span>:
+                            </label>
+                        </div>
+                        <div className="col-sm-8 col-md-6">
+                            <input
+                                type="text"
+                                name="apellido"
+                                className="form-input"
+                                {...register("apellido", { required: "Apellido es requerido" })}
+                                onChange={(e) => setItem({ ...Item, apellido: e.target.value })}
+                            />
+                            {errors.apellido && <div className="text-danger">{errors.apellido.message}</div>}
+                        </div>
+                    </div>
+
+                    {/* campo Fecha de Nacimiento */}
+                    <div className="row">
+                        <div className="col-sm-4 col-md-3 offset-md-1">
+                            <label className="col-form-label" htmlFor="fechaNacimiento">
+                                Fecha de Nacimiento<span className="text-danger">*</span>:
+                            </label>
+                        </div>
+                        <div className="col-sm-8 col-md-6">
+                            <input
+                                type="date"
+                                name="fechaNacimiento"
+                                className="form-input"
+                                {...register("fechaNacimiento", {
+                                    required: "Fecha de Nacimiento es requerida",
+                                    validate: value => new Date(value) < new Date() || "La fecha debe ser menor a la fecha actual"
+                                })}
+                                onChange={(e) => setItem({ ...Item, fechaNacimiento: e.target.value })}
+                            />
+                            {errors.fechaNacimiento && <div className="text-danger">{errors.fechaNacimiento.message}</div>}
+                        </div>
+                    </div>
+                </fieldset>
+
+                {/* Botones Grabar, Cancelar/Volver */}
+                <hr />
+                <div className="row justify-content-center">
+                    <div className="col text-center">
+                        {AccionABMC !== "C" && (
+                            <button type="submit" className="form-button">
+                                <i className="fa fa-check"></i> Grabar
+                            </button>
+                        )}
+                        <button
+                            type="button"
+                            className="form-button"
+                            onClick={Volver}
+                        >
+                            <i className="fa fa-undo"></i>
+                            {AccionABMC === "C" ? " Volver" : " Cancelar"}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    );
+}
