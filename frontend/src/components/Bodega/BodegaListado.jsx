@@ -1,53 +1,42 @@
 import React from "react";
-import "../Paginas.css";
 
-const BodegaListado = ({ bodegas, onSelect, onDelete }) => {
-  // Verifica si bodegas es undefined o null, y renderiza en consecuencia
-  if (!bodegas || bodegas.length === 0) {
-    return (
-      <div className="container table-container">
-        No hay bodegas para mostrar.
-      </div>
-    );
-  }
-
+export default function BodegaListado({ Items, Modificar, Eliminar }) {
   return (
-    <div className="container table-container">
+    <div className="table-responsive">
       <table className="table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Fecha Inauguración</th>
-            <th>Acciones</th>
+            <th className="text-center">Nombre</th>
+            <th className="text-center">Fecha de Inauguración</th>
+            <th className="text-center text-nowrap">Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {bodegas.map((bodega) => (
-            <tr key={bodega.id}>
-              <td>{bodega.id}</td>
-              <td>{bodega.nombre}</td>
-              <td>{new Date(bodega.fechaInauguracion).toLocaleDateString()}</td>
-              <td>
-                <button
-                  className="edit-button"
-                  onClick={() => onSelect(bodega)}
-                >
-                  Editar
-                </button>
-                <button
-                  className="delete-button"
-                  onClick={() => onDelete(bodega.id)}
-                >
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-          ))}
+          {Items &&
+            Items.map((Item) => (
+              <tr key={Item.id}>
+                <td className="text-center">{Item.nombre}</td>
+                <td className="text-center">{Item.fechaInauguracion}</td>
+                <td className="text-center text-nowrap">
+                  <button
+                    className="edit-button"
+                    title="Modificar"
+                    onClick={() => Modificar(Item.id)}
+                  >
+                    <i className="fa fa-pencil"></i> Modificar
+                  </button>
+                  <button
+                    className="delete-button"
+                    title="Eliminar"
+                    onClick={() => Eliminar(Item.id)}
+                  >
+                    <i className="fa fa-times"></i> Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
     </div>
   );
-};
-
-export default BodegaListado;
+}
