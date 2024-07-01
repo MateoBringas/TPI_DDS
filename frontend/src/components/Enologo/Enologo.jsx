@@ -4,15 +4,16 @@ import { enologoService } from "../../services/Enologo.service";
 import EnologoBuscar from "./EnologoBuscar";
 import EnologoListado from "./EnologoListado";
 import EnologoRegistro from "./EnologoRegistro";
+import Popup from "../Popup"; // Asegúrate de importar el nuevo componente Popup
 import '../Paginas.css'; // Ruta del archivo CSS
 
 function Enologo() {
-
     const [AccionABMC, setAccionABMC] = useState("L");
     const [Nombre, setNombre] = useState("");
     const [Apellido, setApellido] = useState("");
     const [Items, setItems] = useState([]);
     const [Item, setItem] = useState(null);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const fetchEnologo = useCallback(async () => {
         try {
@@ -30,6 +31,7 @@ function Enologo() {
     const Volver = useCallback(() => {
         setAccionABMC("L");
         fetchEnologo();
+        setErrorMessage(""); // Limpiar cualquier mensaje de error al volver a la lista
     }, [fetchEnologo]);
 
     const Buscar = useCallback(async () => {
@@ -78,6 +80,15 @@ function Enologo() {
             alert("Registro eliminado correctamente.");
             Volver();
         } catch (error) {
+            // Extraer el mensaje de error, si existe
+            const errorMessage = error.response?.data?.message || 'Error eliminando el enólogo.';
+
+            // Verificar si el mensaje coincide con el específico
+            if (errorMessage === 'No se puede eliminar el enólogo porque está referenciado por una reseña.') {
+                setErrorMessage(errorMessage);
+            } else {
+                setErrorMessage('El enologo esta referenciado por una reseña, elimine la reseña antes de eliminar el enologo.');
+            }
             console.error("Error eliminando enologo:", error);
         }
     }, [Volver]);
@@ -97,10 +108,14 @@ function Enologo() {
         }
     }, [AccionABMC, Volver]);
 
+    const cerrarPopup = () => {
+        setErrorMessage("");
+    };
+
     return (
         <div className="container">
             <div className="tituloPagina">
-                Enologos
+                Enólogos
             </div>
 
             <div className="search-container">
@@ -124,6 +139,13 @@ function Enologo() {
                         Volver={Volver}
                     />
                 </div>
+            )}
+
+            {errorMessage && (
+                <Popup
+                    message={errorMessage}
+                    onClose={cerrarPopup}
+                />
             )}
 
             <div className="table-container">
