@@ -1,8 +1,29 @@
 import React from "react";
+import { useForm } from "react-hook-form";
 
 export default function BodegaBuscar({ Nombre, setNombre, Buscar, Agregar }) {
+  const { register, handleSubmit, setValue } = useForm();
+
+  const onSubmit = (data) => {
+    Buscar();
+  };
+
+  const handleAgregarClick = () => {
+    Agregar();
+  };
+
+  const handleChangeNombre = (e) => {
+    const value = e.target.value;
+    setNombre(value);
+    setValue("nombre", value);
+  };
+
   return (
-    <form name="FormBusqueda" className="search-container">
+    <form
+      name="FormBusqueda"
+      className="search-container"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="container-fluid">
         <div className="row">
           <div className="col-sm-6">
@@ -13,7 +34,8 @@ export default function BodegaBuscar({ Nombre, setNombre, Buscar, Agregar }) {
               type="text"
               className="form-control search-input"
               id="nombre"
-              onChange={(e) => setNombre(e.target.value)}
+              {...register("nombre")} // Registra el campo con react-hook-form
+              onChange={handleChangeNombre} // Maneja el cambio de valor localmente
               value={Nombre}
               maxLength="55"
               autoFocus
@@ -27,18 +49,17 @@ export default function BodegaBuscar({ Nombre, setNombre, Buscar, Agregar }) {
         <div className="row">
           <div className="col text-center botones">
             <button
-              type="button"
+              type="submit" // Usa submit para manejar el formulario
               className="btn btn-primary form-button"
-              onClick={Buscar}
             >
-              <i className="fa fa-search"> </i> Buscar
+              <i className="fa fa-search"></i> Buscar
             </button>
             <button
               type="button"
               className="btn btn-primary form-button"
-              onClick={Agregar}
+              onClick={handleAgregarClick} // Maneja el click para agregar
             >
-              <i className="fa fa-plus"> </i> Agregar
+              <i className="fa fa-plus"></i> Agregar
             </button>
           </div>
         </div>
