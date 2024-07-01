@@ -1,82 +1,159 @@
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import ReseniaListado from './ReseniaListado';
-import ReseniaRegistro from './ReseniaRegistro';
-import { reseniaService } from '../../services/Resenia.service';
-import { enologoService } from '../../services/Enologo.service';
+import React, { useState, useCallback, useEffect } from "react";
+import { reseniaService } from "../../services/Resenia.service";
+import { enologoService } from "../../services/Enologo.service";
+import ReseniaBuscar from "./ReseniaBuscar";
+import ReseniaListado from "./ReseniaListado";
+import ReseniaRegistro from "./ReseniaRegistro";
+import '../Paginas.css'; // Ruta del archivo CSS
 
-const Resenia = () => {
-    const { register, handleSubmit } = useForm();
-    const [resenias, setResenias] = useState([]);
-    const [enologos, setEnologos] = useState([]);
-    const [editingResenia, setEditingResenia] = useState(null);
-    const [showRegistro, setShowRegistro] = useState(false);
-    const [formKey, setFormKey] = useState(0);
+function Resenia() {
+    const [AccionABMC, setAccionABMC] = useState("L");
+    const [Puntuacion, setPuntuacion] = useState("");
+    const [Comentario, setComentario] = useState("");
+    const [Items, setItems] = useState([]);
+    const [Item, setItem] = useState(null);
+    const [Enologos, setEnologos] = useState([]);
 
-    const buscarResenias = async (comentarios) => {
-        console.log(comentarios);
-        setResenias(await reseniaService.Buscar(comentarios));
-    };
+    const fetchResenias = useCallback(async () => {
+        try {
+            const data = await reseniaService.Buscar();
+            setItems(data);
+        } catch (error) {
+            console.error("Error fetching reseñas:", error);
+        }
+    }, []);
 
-    const fetchEnologos = async () => {
-        const enologosData = await enologoService.Buscar();
-        setEnologos(enologosData);
-    };
-
-    const agregarResenia = () => {
-        setEditingResenia(null);
-        setFormKey(prevKey => prevKey + 1);
-        setShowRegistro(true);
-    };
-
-    const editarResenia = (resenia) => {
-        setEditingResenia(resenia);
-        setFormKey(prevKey => prevKey + 1);
-        setShowRegistro(true);
-    };
-
-    const eliminarResenia = async (id) => {
-        const Eliminado = await reseniaService.Eliminar(id);
-        if (Eliminado)
-            setResenias(resenias.filter(resenia => resenia.id !== id));
-    };
-
-    const guardarResenia = () => {
-        buscarResenias();
-    };
+    const fetchEnologos = useCallback(async () => {
+        try {
+            const data = await enologoService.Buscar(); // Asumiendo que tienes un servicio para obtener enólogos
+            setEnologos(data);
+        } catch (error) {
+            console.error("Error fetching enólogos:", error);
+        }
+    }, []);
 
     useEffect(() => {
-        buscarResenias();
+        fetchResenias();
         fetchEnologos();
+    }, [fetchResenias, fetchEnologos]);
+
+    const Volver = useCallback(() => {
+        setAccionABMC("L");
+        fetchResenias();
+    }, [fetchResenias]);
+
+    const Buscar = useCallback(async () => {
+        setAccionABMC("L");
+        try {
+            let data = await reseniaService.Buscar();
+            if (Puntuacion) {
+                data = data.filter(resenia => resenia.puntuacion === parseInt(Puntuacion));
+            }
+            if (Comentario) {
+                data = data.filter(resenia => resenia.comentario.toLowerCase().includes(Comentario.toLowerCase()));
+            }
+            setItems(data);
+        } catch (error) {
+            console.error("Error searching reseñas:", error);
+        }
+    }, [Puntuacion, Comentario]);
+
+    const BuscarPorId = useCallback(async (id, accionABMC) => {
+        setAccionABMC(accionABMC);
+        try {
+            const data = await reseniaService.BuscarPorId(id);
+            setItem(data);
+        } catch (error) {
+            console.error("Error fetching resenia by id:", error);
+        }
     }, []);
+
+    const Modificar = useCallback((id) => {
+        BuscarPorId(id, "M");
+    }, [BuscarPorId]);
+
+    const Agregar = useCallback(() => {
+        setAccionABMC("A");
+        setItem({
+            id: 0,
+            puntuacion: 1,
+            comentario: '',
+            fecha: new Date().toISOString().split('T')[0],
+            EnologoId: Enologos.length > 0 ? Enologos[0].id : 0
+        });
+    }, [Enologos]);
+
+    const Eliminar = useCallback(async (id) => {
+        try {
+            await reseniaService.Eliminar(id);
+            alert("Registro eliminado correctamente.");
+            Volver();
+        } catch (error) {
+            console.error("Error eliminando resenia:", error);
+        }
+    }, [Volver]);
+
+    const Grabar = useCallback(async (item) => {
+        try {
+            if (AccionABMC === "A") {
+                await reseniaService.Agregar(item);
+                alert("Registro agregado correctamente.");
+            } else {
+                await reseniaService.Modificar(item);
+                alert("Registro modificado correctamente.");
+            }
+            Volver();
+        } catch (error) {
+            console.error("Error saving resenia:", error);
+        }
+    }, [AccionABMC, Volver]);
 
     return (
         <div className="container">
-            <h1 className="center-title">Reseñas</h1>
-            <form onSubmit={handleSubmit((data) => buscarResenias(data.comentarios))}>
-                <input className="search-input" {...register('comentarios')} placeholder='Comentarios'/>
-                <button className="form-button" type='submit'>Buscar</button>
-            </form>
-            <button className="form-button agregar" onClick={agregarResenia}>Agregar Reseña</button>
+            <div className="tituloPagina">
+                Reseñas
+            </div>
 
-            {showRegistro && (
-                <ReseniaRegistro
-                    key={formKey}
-                    resenia={editingResenia}
-                    onClose={() => setShowRegistro(false)}
-                    onSave={guardarResenia}
-                    enologos={enologos}
+            <div className="search-container">
+                <ReseniaBuscar
+                    Puntuacion={Puntuacion}
+                    setPuntuacion={setPuntuacion}
+                    Comentario={Comentario}
+                    setComentario={setComentario}
+                    Buscar={Buscar}
+                    Agregar={Agregar}
                 />
+            </div>
+
+            {AccionABMC !== "L" && (
+                <div className="form-container">
+                    <ReseniaRegistro
+                        AccionABMC={AccionABMC}
+                        Item={Item}
+                        setItem={setItem}
+                        Grabar={Grabar}
+                        Volver={Volver}
+                        Enologos={Enologos}
+                    />
+                </div>
             )}
 
-            <ReseniaListado
-                resenias={resenias}
-                onEdit={editarResenia}
-                onDelete={eliminarResenia}
-                enologos={enologos}
-            />
+            <div className="table-container">
+                <ReseniaListado
+                    Items={Items}
+                    Enologos={Enologos}
+                    Modificar={Modificar}
+                    Eliminar={Eliminar}
+                />
+            </div>
+
+            {Items.length === 0 && (
+                <div className="alert alert-info mensajesAlert">
+                    <i className="fa fa-exclamation-sign"></i> No se encontraron registros...
+                </div>
+            )}
         </div>
     );
-};
+}
 
 export default Resenia;
