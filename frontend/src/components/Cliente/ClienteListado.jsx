@@ -21,7 +21,7 @@ const ClienteListado = ({ clientes, onEdit, onDelete }) => {
                 <td>{cliente.apellido}</td>
                 <td>{new Date(cliente.fechaRegistro).toLocaleDateString()}</td>
                 <td>
-                  <button className="edit-button" onClick={() => onEdit(cliente)}>Editar</button>
+                  <button className="edit-button" onClick={() => onEdit(cliente)}>Modificar</button>
                   <button className="delete-button" onClick={() => onDelete(cliente.id)}>Eliminar</button>
                 </td>
               </tr>

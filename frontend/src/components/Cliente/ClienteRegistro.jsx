@@ -10,10 +10,10 @@ const ClienteRegistro = ({ cliente, onClose, onSave }) => {
   const onSubmit = async (data) => {
     const existe = cliente ? true : false;
     const id = cliente ? cliente.id : null;
-    clienteService.Grabar(id, data, existe);
-      onSave(); // Llama a la función onSave para actualizar la lista de clientes
-      onClose();
-    }
+    await clienteService.Grabar(id, data, existe);
+    onSave(); // Llama a la función onSave para actualizar la lista de clientes
+    onClose();
+  }
 
   useEffect(() => {
     reset(cliente || {});
