@@ -77,8 +77,8 @@ function Bodega() {
         await bodegaService.Eliminar(id);
         alert("Bodega eliminada correctamente.");
         Volver();
-      } catch (error) {
-        console.error("Error eliminando la bodega:", error);
+      } catch {
+        alert("No se puede eliminar la bodega por que esta siendo utilizada");
       }
     },
     [Volver]

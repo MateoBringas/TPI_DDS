@@ -1,36 +1,69 @@
-import React, { useState } from "react";
-import "../Paginas.css";
+import React from "react";
+import { useForm } from "react-hook-form";
 
-const VinoBuscar = ({ onSearch }) => {
-  const [query, setQuery] = useState("");
+export default function VinoBuscar({ Nombre, setNombre, Buscar, Agregar }) {
+  const { register, handleSubmit, setValue } = useForm();
 
-  const handleChange = (e) => {
-    const value = e.target.value;
-    setQuery(value);
-    onSearch(value.trim());
+  const onSubmit = (data) => {
+    Buscar();
   };
 
-  const handleClear = () => {
-    setQuery("");
-    onSearch("");
+  const handleAgregarClick = () => {
+    Agregar();
+  };
+
+  const handleChangeNombre = (e) => {
+    const value = e.target.value;
+    setNombre(value);
+    setValue("nombre", value);
   };
 
   return (
-    <div className="container search-container">
-      <input
-        type="text"
-        value={query}
-        onChange={handleChange}
-        placeholder="Buscar vino por nombre"
-        className="search-input"
-      />
-      {query && (
-        <button className="form-button" onClick={handleClear}>
-          Limpiar
-        </button>
-      )}
-    </div>
-  );
-};
+    <form
+      name="FormBusqueda"
+      className="search-container"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-sm-6">
+            <label className="col-form-label" htmlFor="nombre">
+              Nombre:
+            </label>
+            <input
+              type="text"
+              className="form-control search-input"
+              id="nombre"
+              {...register("nombre")}
+              onChange={handleChangeNombre}
+              value={Nombre}
+              maxLength="55"
+              autoFocus
+            />
+          </div>
+        </div>
 
-export default VinoBuscar;
+        <hr />
+
+        {/* Botones */}
+        <div className="row">
+          <div className="col text-center botones">
+            <button
+              type="submit" // Usa submit para manejar el formulario
+              className="btn btn-primary form-button"
+            >
+              <i className="fa fa-search"></i> Buscar
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary form-button"
+              onClick={handleAgregarClick} // Maneja el click para agregar
+            >
+              <i className="fa fa-plus"></i> Agregar
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  );
+}
