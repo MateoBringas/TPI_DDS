@@ -4,6 +4,7 @@ import { enologoService } from "../../services/Enologo.service";
 import EnologoBuscar from "./EnologoBuscar";
 import EnologoListado from "./EnologoListado";
 import EnologoRegistro from "./EnologoRegistro";
+import Popup from "../Popup"; // Importar el componente Popup
 import "../Paginas.css";
 
 function Enologo() {
@@ -11,12 +12,16 @@ function Enologo() {
     const [Nombre, setNombre] = useState("");
     const [Items, setItems] = useState([]);
     const [Item, setItem] = useState(null);
+    const [popupMessage, setPopupMessage] = useState(""); // Estado para el mensaje del Popup
+    const [showPopup, setShowPopup] = useState(false); // Estado para mostrar el Popup
 
     const fetchEnologo = useCallback(async () => {
         try {
             const data = await enologoService.Buscar();
             setItems(data);
         } catch (error) {
+            setPopupMessage("Error fetching enólogo.");
+            setShowPopup(true);
             console.error("Error fetching enólogo:", error);
         }
     }, []);
@@ -41,6 +46,8 @@ function Enologo() {
             }
             setItems(data);
         } catch (error) {
+            setPopupMessage("Error searching enólogo.");
+            setShowPopup(true);
             console.error("Error searching enólogo:", error);
         }
     }, [Nombre]);
@@ -51,6 +58,8 @@ function Enologo() {
             const data = await enologoService.BuscarPorId(id);
             setItem(data);
         } catch (error) {
+            setPopupMessage("Error fetching enólogo con id.");
+            setShowPopup(true);
             console.error("Error fetching enólogo con id:", error);
         }
     }, []);
@@ -77,10 +86,11 @@ function Enologo() {
         async (id) => {
             try {
                 await enologoService.Eliminar(id);
-                alert("Enólogo eliminado correctamente.");
+                alert("Enólogo eliminado correctamente."); // Considerar reemplazar con Popup
                 Volver();
             } catch {
-                alert("No se puede eliminar el enólogo porque está siendo utilizado.");
+                setPopupMessage("No se puede eliminar el enólogo porque está siendo utilizado, debe eliminar las reseñas correspondientes.");
+                setShowPopup(true);
             }
         },
         [Volver]
@@ -91,19 +101,26 @@ function Enologo() {
             try {
                 if (AccionABMC === "A") {
                     await enologoService.Agregar(item);
-                    alert("Enólogo agregado correctamente.");
+                    alert("Enólogo agregado correctamente."); // Considerar reemplazar con Popup
                 } else {
                     await enologoService.Modificar(item);
-                    alert("Enólogo modificado correctamente.");
+                    alert("Enólogo modificado correctamente."); // Considerar reemplazar con Popup
                 }
                 Volver();
             } catch (error) {
+                setPopupMessage("Error saving enólogo.");
+                setShowPopup(true);
                 console.log(item);
                 console.error("Error saving enólogo:", error);
             }
         },
         [AccionABMC, Volver]
     );
+
+    const handlePopupClose = () => {
+        setShowPopup(false);
+        setPopupMessage(""); // Limpiar mensaje al cerrar el Popup
+    };
 
     return (
         <div className="container">
@@ -142,6 +159,13 @@ function Enologo() {
                 <div className="alert alert-info mensajesAlert">
                     <i className="fa fa-exclamation-sign"></i> No se encontraron enólogos...
                 </div>
+            )}
+
+            {showPopup && (
+                <Popup
+                    message={popupMessage}
+                    onClose={handlePopupClose}
+                />
             )}
         </div>
     );
