@@ -281,6 +281,9 @@ const Pedido = sequelize.define(
   { timestamps: false }
 );
 
+Cliente.hasMany(Pedido, { foreignKey: "ClienteId", onDelete: "CASCADE" });
+Pedido.belongsTo(Cliente, { foreignKey: "ClienteId" });
+
 Enologo.hasMany(Resenia, { foreignKey: "enologoId", onDelete: "CASCADE" });
 Resenia.belongsTo(Enologo, { foreignKey: "enologoId" });
 

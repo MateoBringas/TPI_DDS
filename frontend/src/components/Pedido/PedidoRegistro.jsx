@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { pedidoService } from '../../services/Pedido.service';
 
 const PedidoRegistro = ({ pedido, onClose, onSave, clientes }) => {
-  const { register, handleSubmit, reset } = useForm({
+  const { register, handleSubmit, reset, formState: { errors } } = useForm({
     defaultValues: pedido || {}
   });
 
@@ -27,12 +27,14 @@ const PedidoRegistro = ({ pedido, onClose, onSave, clientes }) => {
       <form className='form' onSubmit={handleSubmit(onSubmit)}>
         <input
           className="form-input"
-          {...register("fechaPedido", { required: true })}
+          {...register("fechaPedido", { required: "La fecha del pedido es obligatoria" })}
           type="date"
           max={today}
           placeholder="Fecha de Pedido"
         />
-        <select className="form-input" {...register("ClienteId", { required: true })}>
+        {errors.fechaPedido && <span className="error-message">{errors.fechaPedido.message}</span>}
+        
+        <select className="form-input" {...register("ClienteId", { required: "Debe seleccionar un cliente" })}>
           <option value="">Seleccione un cliente</option>
           {clientes.map(cliente => (
             <option key={cliente.id} value={cliente.id}>
@@ -40,7 +42,14 @@ const PedidoRegistro = ({ pedido, onClose, onSave, clientes }) => {
             </option>
           ))}
         </select>
-        <textarea className="form-input" {...register("comentarios")} placeholder="Comentarios"></textarea>
+        {errors.ClienteId && <span className="error-message">{errors.ClienteId.message}</span>}
+        
+        <textarea 
+          className="form-input" 
+          {...register("comentarios")} 
+          placeholder="Comentarios">
+        </textarea>
+        
         <div>
           <button className="form-button" type="submit">{pedido ? 'Guardar Cambios' : 'Registrar'}</button>
           <button className="form-button" type="button" onClick={onClose}>Cancelar</button>
@@ -48,6 +57,5 @@ const PedidoRegistro = ({ pedido, onClose, onSave, clientes }) => {
       </form>
     </div>
   );
-};
-
+}  
 export default PedidoRegistro;
