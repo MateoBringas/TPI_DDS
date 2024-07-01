@@ -7,7 +7,6 @@ const PedidoListado = ({ pedidos, onEdit, onDelete, clientes }) => {
       <table className='table'>
         <thead>
           <tr>
-            <th>ID</th>
             <th>Fecha de Pedido</th>
             <th>Cliente</th> {/* Cambiado de "ID Cliente" a "Cliente" */}
             <th>Comentarios</th>
@@ -20,7 +19,6 @@ const PedidoListado = ({ pedidos, onEdit, onDelete, clientes }) => {
               const cliente = clientes.find(cliente => cliente.id === pedido.ClienteId);
               return (
                 <tr key={pedido.id}>
-                  <td>{pedido.id}</td>
                   <td>{new Date(pedido.fechaPedido).toLocaleDateString()}</td>
                   <td>{cliente ? `${cliente.nombre} ${cliente.apellido}` : 'Cliente no encontrado'}</td>
                   <td>{pedido.comentarios}</td>
