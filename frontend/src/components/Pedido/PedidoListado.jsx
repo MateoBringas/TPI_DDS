@@ -23,7 +23,7 @@ const PedidoListado = ({ pedidos, onEdit, onDelete, clientes }) => {
                   <td>{cliente ? `${cliente.nombre} ${cliente.apellido}` : 'Cliente no encontrado'}</td>
                   <td>{pedido.comentarios}</td>
                   <td>
-                    <button className="edit-button" onClick={() => onEdit(pedido)}>Editar</button>
+                    <button className="edit-button" onClick={() => onEdit(pedido)}>Modificar</button>
                     <button className="delete-button" onClick={() => onDelete(pedido.id)}>Eliminar</button>
                   </td>
                 </tr>
