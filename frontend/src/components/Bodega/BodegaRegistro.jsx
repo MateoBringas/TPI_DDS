@@ -1,84 +1,111 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import "../Paginas.css";
 
-const BodegaRegistro = ({ bodega, onSave }) => {
+export default function BodegaRegistro({
+  AccionABMC,
+  Item,
+  setItem,
+  Grabar,
+  Volver,
+}) {
   const {
     register,
     handleSubmit,
-    setValue,
     reset,
     formState: { errors },
   } = useForm({
-    defaultValues: {
-      id: "",
-      nombre: "",
-      fechaInauguracion: "", // Asegúrate de que este campo esté inicializado correctamente
-    },
+    defaultValues: Item,
   });
 
+  const isEditing = AccionABMC === "M";
+  const title = isEditing ? "Editar Bodega" : "Agregar Nueva Bodega";
+
   useEffect(() => {
-    if (bodega) {
-      reset({
-        id: bodega.id,
-        nombre: bodega.nombre,
-        fechaInauguracion: bodega.fechaInauguracion, // Asegúrate de que esta fecha esté siendo cargada correctamente
-      });
-    } else {
-      reset({
-        id: "",
-        nombre: "",
-        fechaInauguracion: "", // Asegúrate de que este campo esté inicializado correctamente
-      });
-    }
-  }, [bodega, reset]);
+    reset(Item);
+  }, [Item, reset]);
 
   const onSubmit = (data) => {
-    onSave(data); // Llama a la función onSave para guardar la bodega
+    if (new Date(data.fechaInauguracion) >= new Date()) {
+      alert(
+        "La fecha de inauguración debe ser menor o igual a la fecha actual."
+      );
+    } else {
+      Grabar(data);
+    }
   };
 
   return (
-    <div className="container form-container">
-      <form onSubmit={handleSubmit(onSubmit)} className="form">
-        {bodega && (
-          <div className="form-input">
-            <label>ID:</label>
-            <input
-              type="text"
-              {...register("id")}
-              readOnly
-              className="form-input"
-            />
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="container-fluid">
+        <h2 className="text-center">{title}</h2>
+        <fieldset disabled={AccionABMC === "C"}>
+          <div className="row">
+            <div className="col-sm-4 col-md-3 offset-md-1">
+              <label className="col-form-label" htmlFor="nombre">
+                Nombre<span className="text-danger">*</span>:
+              </label>
+            </div>
+            <div className="col-sm-8 col-md-6">
+              <input
+                type="text"
+                name="nombre"
+                className="form-input"
+                {...register("nombre", { required: "Nombre es requerido" })}
+                onChange={(e) => setItem({ ...Item, nombre: e.target.value })}
+              />
+              {errors.nombre && (
+                <div className="text-danger">{errors.nombre.message}</div>
+              )}
+            </div>
           </div>
-        )}
-        <div className="form-input">
-          <label>Nombre:</label>
-          <input
-            type="text"
-            {...register("nombre", { required: true, maxLength: 30 })}
-            className="form-input"
-          />
-          {errors.nombre && (
-            <span>
-              Este campo es requerido y debe tener máximo 30 caracteres.
-            </span>
-          )}
-        </div>
-        <div className="form-input">
-          <label>Fecha Inauguración:</label>
-          <input
-            type="date"
-            {...register("fechaInauguracion", { required: true })}
-            className="form-input"
-          />
-          {errors.fechaInauguracion && <span>Este campo es requerido.</span>}
-        </div>
-        <button type="submit" className="form-button">
-          Guardar
-        </button>
-      </form>
-    </div>
-  );
-};
 
-export default BodegaRegistro;
+          {/* Campo Fecha de Inauguración */}
+          <div className="row">
+            <div className="col-sm-4 col-md-3 offset-md-1">
+              <label className="col-form-label" htmlFor="fechaInauguracion">
+                Fecha de Inauguración<span className="text-danger">*</span>:
+              </label>
+            </div>
+            <div className="col-sm-8 col-md-6">
+              <input
+                type="date"
+                name="fechaInauguracion"
+                className="form-input"
+                {...register("fechaInauguracion", {
+                  required: "Fecha de Inauguración es requerida",
+                  validate: (value) =>
+                    new Date(value) <= new Date() ||
+                    "La fecha debe ser menor o igual a la fecha actual",
+                })}
+                onChange={(e) =>
+                  setItem({ ...Item, fechaInauguracion: e.target.value })
+                }
+              />
+              {errors.fechaInauguracion && (
+                <div className="text-danger">
+                  {errors.fechaInauguracion.message}
+                </div>
+              )}
+            </div>
+          </div>
+        </fieldset>
+
+        {/* Botones Grabar, Cancelar/Volver */}
+        <hr />
+        <div className="row justify-content-center">
+          <div className="col text-center">
+            {AccionABMC !== "C" && (
+              <button type="submit" className="form-button">
+                <i className="fa fa-check"></i> Grabar
+              </button>
+            )}
+            <button type="button" className="form-button" onClick={Volver}>
+              <i className="fa fa-undo"></i>
+              {AccionABMC === "C" ? " Volver" : " Cancelar"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  );
+}

@@ -83,7 +83,7 @@ router.delete('/enologo/:id', async (req, res) => {
             return res.status(404).json({ error: 'Enólogo no encontrado' });
         }
 
-        await enologo.destroy();
+        await enologo.destroy(); // Esto eliminará el enólogo y todas las reseñas asociadas
         res.json({ message: 'Enólogo eliminado correctamente' });
 
     } catch (error) {
@@ -91,5 +91,6 @@ router.delete('/enologo/:id', async (req, res) => {
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
+
 
 module.exports = router;

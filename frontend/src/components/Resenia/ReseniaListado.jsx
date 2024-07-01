@@ -1,36 +1,61 @@
-import React from 'react';
-import '../Paginas.css';
+import React from "react";
 
-const ReseniaListado = ({ resenias, onSelect, onDelete }) => {
+export default function ReseniaListado({
+                                           Items = [],   // Establecer un valor predeterminado vacío
+                                           Enologos = [], // Establecer un valor predeterminado vacío
+                                           Modificar,
+                                           Eliminar,
+                                       }) {
     return (
-        <div className="container table-container">
+        <div className="table-responsive">
             <table className="table">
                 <thead>
                 <tr>
-                    <th>Puntuación</th>
-                    <th>Comentario</th>
-                    <th>Enólogo</th>
-                    <th>Fecha</th>
-                    <th>Acciones</th>
+                    <th className="text-center">Puntuación</th>
+                    <th className="text-center">Comentario</th>
+                    <th className="text-center">Fecha</th>
+                    <th className="text-center">Enólogo</th>
+                    <th className="text-center text-nowrap">Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
-                {resenias.map(resenia => (
-                    <tr key={resenia.id}>
-                        <td>{resenia.puntuacion}</td>
-                        <td>{resenia.comentario}</td>
-                        <td>{resenia.EnologoId}</td>
-                        <td>{new Date(resenia.fecha).toLocaleDateString()}</td>
-                        <td>
-                            <button className="edit-button" onClick={() => onSelect(resenia)}>Editar</button>
-                            <button className="delete-button" onClick={() => onDelete(resenia.id)}>Eliminar</button>
-                        </td>
+                {Items.length > 0 ? (
+                    Items.map((item) => {
+                        const enologo = Enologos.find(enologo => enologo.id === item.EnologoId);
+                        return (
+                            <tr key={item.id}>
+                                <td className="text-center">{item.puntuacion}</td>
+                                <td className="text-center">{item.comentario}</td>
+                                <td className="text-center">{item.fecha}</td>
+                                <td className="text-center">
+                                    {enologo ? `${enologo.nombre} ${enologo.apellido}` : "No disponible"}
+                                </td>
+                                <td className="text-center text-nowrap">
+                                    <button
+                                        className="edit-button"
+                                        title="Modificar"
+                                        onClick={() => Modificar(item.id)}
+                                    >
+                                        <i className="fa fa-pencil"></i> Modificar
+                                    </button>
+                                    <button
+                                        className="delete-button"
+                                        title="Eliminar"
+                                        onClick={() => Eliminar(item.id)}
+                                    >
+                                        <i className="fa fa-times"></i> Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        );
+                    })
+                ) : (
+                    <tr>
+                        <td colSpan="5" className="text-center">No hay reseñas disponibles.</td>
                     </tr>
-                ))}
+                )}
                 </tbody>
             </table>
         </div>
     );
-};
-
-export default ReseniaListado;
+}

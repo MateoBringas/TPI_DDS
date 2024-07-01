@@ -1,52 +1,44 @@
 import React from "react";
-import "../Paginas.css";
 
-const VinoListado = ({ vinos, onSelect, onDelete }) => {
-  // Verifica si vinos es undefined o null, y renderiza en consecuencia
-  if (!vinos || vinos.length === 0) {
-    return (
-      <div className="container table-container">
-        No hay vinos para mostrar.
-      </div>
-    );
-  }
-
+export default function VinoListado({ Items, Modificar, Eliminar, bodegas }) {
   return (
-    <div className="container table-container">
+    <div className="table-responsive">
       <table className="table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Añejamiento</th>
-            <th>Bodega</th>
-            <th>Acciones</th>
+            <th className="text-center">Nombre</th>
+            <th className="text-center">anejamiento</th>
+            <th className="text-center">Bodega</th>
+            <th className="text-center text-nowrap">Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {vinos.map((vino) => (
-            <tr key={vino.id}>
-              <td>{vino.id}</td>
-              <td>{vino.nombre}</td>
-              <td>{new Date(vino.anejamiento).toLocaleDateString()}</td>
-              <td>{vino.BodegaId ? vino.BodegaId : "Sin bodega"}</td>
-              <td>
-                <button className="edit-button" onClick={() => onSelect(vino)}>
-                  Editar
-                </button>
-                <button
-                  className="delete-button"
-                  onClick={() => onDelete(vino.id)}
-                >
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-          ))}
+          {Items &&
+            Items.map((Item) => (
+              <tr key={Item.id}>
+                <td className="text-center">{Item.nombre}</td>
+                <td className="text-center">{Item.anejamiento}</td>
+                <td className="text-center">{Item.BodegaId}</td>
+                <td className="text-center text-nowrap">
+                  <button
+                    className="edit-button"
+                    title="Modificar"
+                    onClick={() => Modificar(Item.id)}
+                  >
+                    <i className="fa fa-pencil"></i> Modificar
+                  </button>
+                  <button
+                    className="delete-button"
+                    title="Eliminar"
+                    onClick={() => Eliminar(Item.id)}
+                  >
+                    <i className="fa fa-times"></i> Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
     </div>
   );
-};
-
-export default VinoListado;
+}

@@ -1,73 +1,147 @@
-import React, { useState, useEffect } from "react";
-import BodegaListado from "./BodegaListado";
-import BodegaBuscar from "./BodegaBuscar";
-import BodegaRegistro from "./BodegaRegistro";
+import React, { useState, useEffect, useCallback } from "react";
+import moment from "moment";
 import { bodegaService } from "../../services/Bodega.service";
+import BodegaBuscar from "./BodegaBuscar";
+import BodegaListado from "./BodegaListado";
+import BodegaRegistro from "./BodegaRegistro";
 import "../Paginas.css";
 
 function Bodega() {
-  const [bodegas, setBodegas] = useState([]);
-  const [selectedBodega, setSelectedBodega] = useState(null);
+  const [AccionABMC, setAccionABMC] = useState("L");
+  const [Nombre, setNombre] = useState("");
+  const [Items, setItems] = useState([]);
+  const [Item, setItem] = useState(null);
 
-  useEffect(() => {
-    fetchBodegas();
+  const fetchBodega = useCallback(async () => {
+    try {
+      const data = await bodegaService.Buscar();
+      setItems(data);
+    } catch (error) {
+      console.error("Error fetching bodega:", error);
+    }
   }, []);
 
-  const fetchBodegas = async () => {
-    try {
-      const data = await bodegaService.Buscar();
-      setBodegas(data);
-    } catch (error) {
-      console.error("Error al obtener las bodegas:", error);
-    }
-  };
+  useEffect(() => {
+    fetchBodega();
+  }, [fetchBodega]);
 
-  const handleSearch = async (query) => {
-    try {
-      const data = await bodegaService.Buscar();
-      const filtered = data.filter((bodega) =>
-        bodega.nombre.toLowerCase().includes(query.toLowerCase())
-      );
-      setBodegas(filtered);
-    } catch (error) {
-      console.error("Error al buscar las bodegas:", error);
-    }
-  };
+  const Volver = useCallback(() => {
+    setAccionABMC("L");
+    fetchBodega();
+  }, [fetchBodega]);
 
-  const handleSelect = (bodega) => {
-    setSelectedBodega(bodega);
-  };
-
-  const handleDelete = async (id) => {
+  const Buscar = useCallback(async () => {
+    setAccionABMC("L");
     try {
-      await bodegaService.Eliminar(id);
-      fetchBodegas();
+      let data = await bodegaService.Buscar();
+      if (Nombre) {
+        data = data.filter((Bodega) =>
+          Bodega.nombre.toLowerCase().includes(Nombre.toLowerCase())
+        );
+      }
+      setItems(data);
     } catch (error) {
-      console.error("Error al eliminar la bodega:", error);
+      console.error("Error searching bodega:", error);
     }
-  };
+  }, [Nombre]);
 
-  const handleSave = async (bodega) => {
+  const BuscarPorId = useCallback(async (id, accionABMC) => {
+    setAccionABMC(accionABMC);
     try {
-      await bodegaService.Grabar(bodega);
-      fetchBodegas();
-      setSelectedBodega(null); // Resetea la bodega seleccionada después de guardar
+      const data = await bodegaService.BuscarPorId(id);
+      setItem(data);
     } catch (error) {
-      console.log(bodega);
-      console.error("Error al guardar la bodega:", error);
+      console.error("Error fetching bodega con id:", error);
     }
-  };
+  }, []);
+
+  const Modificar = useCallback(
+    (id) => {
+      BuscarPorId(id, "M");
+    },
+    [BuscarPorId]
+  );
+
+  const Agregar = useCallback(() => {
+    setAccionABMC("A");
+    setItem({
+      id: 0,
+      nombre: "",
+      fechaInauguracion: moment(new Date()).format("YYYY-MM-DD"),
+    });
+  }, []);
+
+  const Eliminar = useCallback(
+    async (id) => {
+      try {
+        await bodegaService.Eliminar(id);
+        alert("Bodega eliminada correctamente.");
+        Volver();
+      } catch {
+        alert("No se puede eliminar la bodega por que esta siendo utilizada");
+      }
+    },
+    [Volver]
+  );
+
+  const Grabar = useCallback(
+    async (item) => {
+      try {
+        if (AccionABMC === "A") {
+          await bodegaService.Agregar(item);
+          alert("Bodega agregada correctamente.");
+        } else {
+          await bodegaService.Modificar(item);
+          alert("Bodega modificada correctamente.");
+        }
+        Volver();
+      } catch (error) {
+        console.log(item);
+        console.error("Error saving bodega:", error);
+      }
+    },
+    [AccionABMC, Volver]
+  );
 
   return (
     <div className="container">
-      <h1 className="center-title">Bodegas</h1>
-      <BodegaBuscar onSearch={handleSearch} />
-      <BodegaListado
-        bodegas={bodegas}
-        onSelect={handleSelect}
-        onDelete={handleDelete}
-      />
-      <BodegaRegistro bodega={selectedBodega} onSave={handleSave} />
+      <div className="tituloPagina">Bodega</div>
+
+      <div className="search-container">
+        <BodegaBuscar
+          Nombre={Nombre}
+          setNombre={setNombre}
+          Buscar={Buscar}
+          Agregar={Agregar}
+        />
+      </div>
+
+      {AccionABMC !== "L" && (
+        <div className="form-container">
+          <BodegaRegistro
+            AccionABMC={AccionABMC}
+            Item={Item}
+            setItem={setItem}
+            Grabar={Grabar}
+            Volver={Volver}
+          />
+        </div>
+      )}
+
+      <div className="table-container">
+        <BodegaListado
+          Items={Items}
+          Modificar={Modificar}
+          Eliminar={Eliminar}
+        />
+      </div>
+
+      {Items.length === 0 && (
+        <div className="alert alert-info mensajesAlert">
+          <i className="fa fa-exclamation-sign"></i> No se encontraron
+          bodegas...
+        </div>
+      )}
     </div>
   );
 }
