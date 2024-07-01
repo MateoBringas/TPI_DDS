@@ -7,7 +7,6 @@ const ReseniaListado = ({ resenias, onSelect, onDelete }) => {
             <table className="table">
                 <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Puntuación</th>
                     <th>Comentario</th>
                     <th>Enólogo</th>
@@ -18,7 +17,6 @@ const ReseniaListado = ({ resenias, onSelect, onDelete }) => {
                 <tbody>
                 {resenias.map(resenia => (
                     <tr key={resenia.id}>
-                        <td>{resenia.id}</td>
                         <td>{resenia.puntuacion}</td>
                         <td>{resenia.comentario}</td>
                         <td>{resenia.EnologoId}</td>

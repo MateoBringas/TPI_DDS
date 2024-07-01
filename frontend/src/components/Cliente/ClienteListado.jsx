@@ -7,7 +7,6 @@ const ClienteListado = ({ clientes, onEdit, onDelete }) => {
       <table className='table'>
         <thead>
           <tr>
-            <th>ID</th>
             <th>Nombre</th>
             <th>Apellido</th>
             <th>Fecha de Registro</th>
@@ -18,7 +17,6 @@ const ClienteListado = ({ clientes, onEdit, onDelete }) => {
           {clientes.length > 0 ? (
             clientes.map((cliente) => (
               <tr key={cliente.id}>
-                <td>{cliente.id}</td>
                 <td>{cliente.nombre}</td>
                 <td>{cliente.apellido}</td>
                 <td>{new Date(cliente.fechaRegistro).toLocaleDateString()}</td>
