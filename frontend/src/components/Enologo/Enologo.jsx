@@ -1,8 +1,11 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import moment from "moment";
 import { enologoService } from "../../services/Enologo.service";
+
 import EnologoBuscar from "./EnologoBuscar";
 import EnologoListado from "./EnologoListado";
 import EnologoRegistro from "./EnologoRegistro";
+import "../Paginas.css";
 
 function Enologo() {
     const [AccionABMC, setAccionABMC] = useState("L");
@@ -11,39 +14,56 @@ function Enologo() {
     const [Items, setItems] = useState([]);
     const [Item, setItem] = useState(null);
 
-    const fetchEnologos = useCallback(async () => {
+    const fetchEnologo = useCallback(async () => {
         try {
             const data = await enologoService.Buscar();
             setItems(data);
         } catch (error) {
-            console.error("Error fetching enologos:", error);
+            console.error("Error fetching enologo:", error);
         }
     }, []);
 
+    useEffect(() => {
+        fetchEnologo();
+    }, [fetchEnologo]);
+
     const Volver = useCallback(() => {
         setAccionABMC("L");
-        fetchEnologos();
-    }, [fetchEnologos]);
+        fetchEnologo();
+    }, [fetchEnologo]);
 
     const Buscar = useCallback(async () => {
         setAccionABMC("L");
         try {
             let data = await enologoService.Buscar();
-            if (Nombre) {
-                data = data.filter((enologo) =>
-                    enologo.nombre.toLowerCase().includes(Nombre.toLowerCase())
-                );
-            }
-            if (Apellido) {
-                data = data.filter((enologo) =>
-                    enologo.apellido.toLowerCase().includes(Apellido.toLowerCase())
+            if (Nombre || Apellido) {
+                data = data.filter((Enologo) =>
+                    (Nombre ? Enologo.nombre.toLowerCase().includes(Nombre.toLowerCase()) : true) &&
+                    (Apellido ? Enologo.apellido.toLowerCase().includes(Apellido.toLowerCase()) : true)
                 );
             }
             setItems(data);
         } catch (error) {
-            console.error("Error searching enologos:", error);
+            console.error("Error searching enologo:", error);
         }
     }, [Nombre, Apellido]);
+
+    const BuscarPorId = useCallback(async (id, accionABMC) => {
+        setAccionABMC(accionABMC);
+        try {
+            const data = await enologoService.BuscarPorId(id);
+            setItem(data);
+        } catch (error) {
+            console.error("Error fetching enologo con id:", error);
+        }
+    }, []);
+
+    const Modificar = useCallback(
+        (id) => {
+            BuscarPorId(id, "M");
+        },
+        [BuscarPorId]
+    );
 
     const Agregar = useCallback(() => {
         setAccionABMC("A");
@@ -51,31 +71,18 @@ function Enologo() {
             id: 0,
             nombre: "",
             apellido: "",
-            fechaNacimiento: "",
+            fechaNacimiento: moment(new Date()).format("YYYY-MM-DD"),
         });
     }, []);
-
-    const Modificar = useCallback(
-        async (id) => {
-            setAccionABMC("M");
-            try {
-                const data = await enologoService.BuscarPorId(id);
-                setItem(data);
-            } catch (error) {
-                console.error("Error fetching enologo by id:", error);
-            }
-        },
-        []
-    );
 
     const Eliminar = useCallback(
         async (id) => {
             try {
                 await enologoService.Eliminar(id);
-                alert("Enologo eliminado correctamente.");
+                alert("Enólogo eliminado correctamente.");
                 Volver();
-            } catch {
-                alert("No se puede eliminar el enologo porque está siendo utilizado por otra entidad.");
+            } catch (error) {
+                console.error("Error deleting enologo:", error);
             }
         },
         [Volver]
@@ -86,10 +93,10 @@ function Enologo() {
             try {
                 if (AccionABMC === "A") {
                     await enologoService.Agregar(item);
-                    alert("Enologo agregado correctamente.");
+                    alert("Enólogo agregado correctamente.");
                 } else {
                     await enologoService.Modificar(item);
-                    alert("Enologo modificado correctamente.");
+                    alert("Enólogo modificado correctamente.");
                 }
                 Volver();
             } catch (error) {
@@ -101,7 +108,7 @@ function Enologo() {
 
     return (
         <div className="container">
-            <div className="tituloPagina">Enologos</div>
+            <div className="tituloPagina">Enólogo</div>
 
             <div className="search-container">
                 <EnologoBuscar
@@ -129,12 +136,6 @@ function Enologo() {
             <div className="table-container">
                 <EnologoListado Items={Items} Modificar={Modificar} Eliminar={Eliminar} />
             </div>
-
-            {Items.length === 0 && (
-                <div className="alert alert-info mensajesAlert">
-                    <i className="fa fa-exclamation-sign"></i> No se encontraron enologos...
-                </div>
-            )}
         </div>
     );
 }
