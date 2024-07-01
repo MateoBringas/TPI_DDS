@@ -1,16 +1,63 @@
 const express = require("express");
 const router = express.Router();
 const { Pedido } = require("../base-orm/sequelize-init");
+const { Cliente } = require("../base-orm/sequelize-init");
 const { Op, ValidationError } = require("sequelize");
+
+
+async function getPedidosConNombreClientes() {
+    try {
+        const pedidos = await Pedido.findAll({
+            include: {
+                model: Cliente,
+                attributes: ['nombre', 'apellido'], // Solo incluir nombre y apellido del cliente
+                as: 'Cliente'
+            },
+            attributes: ['id', 'fechaPedido', 'ClienteId', 'comentarios'] // Atributos del pedido a incluir
+        });
+
+        // Transformar los resultados a un formato más conveniente
+        const resultados = pedidos.map(pedido => ({
+            id: pedido.id,
+            fechaPedido: pedido.fechaPedido,
+            ClienteId: pedido.ClienteId,
+            comentarios: pedido.comentarios,
+            clienteNombre: pedido.Cliente.nombre,
+            clienteApellido: pedido.Cliente.apellido
+        }));
+
+        return resultados;
+    } catch (error) {
+        console.error('Error al obtener pedidos con nombres de clientes:', error);
+        throw error;
+    }
+}
 
 // Endpoint para todos los pedidos
 router.get('/pedido', async (req, res) => {
+    const { comentarios } = req.query;
+    console.log('Comentarios:', comentarios);
+
     try {
-        const pedidos = await Pedido.findAll();
-        res.json(pedidos);
+        if (!comentarios) {
+            // Si no se proporciona el parámetro 'comentarios', buscar todos los pedidos
+            const pedidos = await Pedido.findAll();
+            ////console.log('Pedidos:', pedidos);
+            res.json(pedidos);
+        } else {
+            // Si se proporciona el parámetro 'comentarios', filtrar por ese comentario
+            const pedidos = await Pedido.findAll({
+                where: {
+                    comentarios: {
+                        [Op.like]: `%${comentarios}%`
+                    }
+                }
+            });
+            res.json(pedidos);
+        }
     } catch (error) {
-        console.error('Error al obtener los pedidos:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
+        console.error('Error al buscar pedidos:', error);
+        res.status(500).json({ error: 'Error al buscar pedidos' });
     }
 });
 
