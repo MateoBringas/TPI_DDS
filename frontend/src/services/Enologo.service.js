@@ -20,15 +20,7 @@ export const enologoService = {
         return response.data;
     },
     Eliminar: async (id) => {
-        try {
-            const response = await axios.delete(`${API_URL}/enologos/${id}`);
-            return response.data;
-        } catch (error) {
-            if (error.response && error.response.status === 400) {
-                throw new Error('No se puede eliminar el enólogo porque está referenciado por una reseña.');
-            } else {
-                throw new Error('Error eliminando el enólogo.');
-            }
-        }
+        const response = await axios.delete(`${API_URL}/${id}`);
+        return response.data;
     }
 };
