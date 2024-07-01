@@ -8,12 +8,16 @@ export default function EnologoRegistro({
                                             Grabar,
                                             Volver,
                                         }) {
-    const { register, handleSubmit, formState: { errors } } = useForm({
+    const { register, handleSubmit, reset, formState: { errors } } = useForm({
         defaultValues: Item,
     });
 
     const isEditing = AccionABMC === "M";
     const title = isEditing ? "Editar Enólogo" : "Agregar Nuevo Enólogo";
+
+    useEffect(() => {
+        reset(Item);
+    },[reset, Item]);
 
     const onSubmit = (data) => {
         if (new Date(data.fechaNacimiento) >= new Date()) {
