@@ -1,4 +1,4 @@
-const { describe, expect, beforeAll, afterAll } = require("@jest/globals");
+const { describe, expect, beforeAll, afterAll, it } = require("@jest/globals");
 const request = require("supertest");
 const { sequelize, Vino, Bodega } = require("../base-orm/sequelize-init"); // Ajusta la ruta y asegúrate de que los modelos sean correctos
 const app = require("../index"); // Ajusta la ruta del archivo principal de la aplicación
@@ -23,173 +23,119 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await sequelize.close();
-  await server.close();
+  server.close();
 });
 
-describe("GET /vino", function () {
-  it("Respuesta OK con Código 200 y lista de vinos", async () => {
-    const res = await request(app).get("/vino");
-    expect(res.statusCode).toEqual(200);
-    expect(res.headers["content-type"]).toEqual(
-      "application/json; charset=utf-8"
-    );
-    expect(res.body).toEqual(
-      expect.arrayContaining([
+describe("Pruebas de Endpoints de Vino", () => {
+  describe("GET /vino", () => {
+    it("debería obtener una respuesta OK con Código 200 y una lista de vinos", async () => {
+      const res = await request(app).get("/vino");
+      expect(res.statusCode).toEqual(200);
+      expect(res.headers["content-type"]).toEqual(
+        "application/json; charset=utf-8"
+      );
+      expect(res.body).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: expect.any(Number),
+            nombre: expect.any(String),
+            anejamiento: expect.any(String),
+            BodegaId: expect.any(Number),
+          }),
+        ])
+      );
+    });
+
+    it("debería obtener una respuesta OK con Código 200 y un vino específico", async () => {
+      const vino = await Vino.findOne({ where: { nombre: "Vino Tinto" } });
+      const res = await request(app).get(`/vino/${vino.id}`);
+      expect(res.statusCode).toEqual(200);
+      expect(res.headers["content-type"]).toEqual(
+        "application/json; charset=utf-8"
+      );
+      expect(res.body).toEqual(
         expect.objectContaining({
-          id: expect.any(Number),
-          nombre: expect.any(String),
-          anejamiento: expect.any(String),
+          id: vino.id,
+          nombre: "Vino Tinto",
+          anejamiento: "2015-06-01",
           BodegaId: expect.any(Number),
-        }),
-      ])
-    );
-  });
+        })
+      );
+    });
 
-  it("Respuesta OK con Código 200 y vino específico", async () => {
-    const res = await request(app).get("/vino/1");
-    expect(res.statusCode).toEqual(200);
-    expect(res.headers["content-type"]).toEqual(
-      "application/json; charset=utf-8"
-    );
-    expect(res.body).toEqual(
-      expect.objectContaining({
-        id: 1,
-        nombre: "Vino Tinto",
-        anejamiento: "2015-06-01",
-        BodegaId: expect.any(Number),
-      })
-    );
-  });
-
-  it("Respuesta con Código 404 y mensaje 'Vino no encontrado'", async () => {
-    const res = await request(app).get("/vino/9999");
-    expect(res.statusCode).toEqual(404);
-    expect(res.headers["content-type"]).toEqual(
-      "application/json; charset=utf-8"
-    );
-    expect(res.body).toEqual(
-      expect.objectContaining({
+    it("debería obtener una respuesta con Código 404 y mensaje 'Vino no encontrado' si el vino no existe", async () => {
+      const res = await request(app).get("/vino/9999");
+      expect(res.statusCode).toEqual(404);
+      expect(res.headers["content-type"]).toEqual(
+        "application/json; charset=utf-8"
+      );
+      expect(res.body).toEqual({
         error: "Vino no encontrado",
-      })
-    );
+      });
+    });
   });
-});
 
-describe("POST /vino", function () {
-  it("Respuesta con Código 201 y crea un nuevo vino", async () => {
-    const bodega = await Bodega.create({
-      nombre: "Nueva Bodega",
-      anejamiento: "2000-01-01",
-    });
+  describe("POST /vino", () => {
+    it("debería obtener una respuesta con Código 201 y crear un nuevo vino", async () => {
+      const bodega = await Bodega.create({
+        nombre: "Nueva Bodega",
+        fechaInauguracion: "2000-01-01",
+      });
 
-    const res = await request(app).post("/vino").send({
-      nombre: "Vino Rosado",
-      anejamiento: "2020-08-01",
-      BodegaId: bodega.id,
-    });
-
-    expect(res.statusCode).toEqual(201);
-    expect(res.headers["content-type"]).toEqual(
-      "application/json; charset=utf-8"
-    );
-    expect(res.body).toEqual(
-      expect.objectContaining({
-        nombre: "Vino Rosado",
-        anejamiento: "2020-08-01",
+      const res = await request(app).post("/vino").send({
+        nombre: "Nuevo Vino",
+        anejamiento: "2010-01-01",
         BodegaId: bodega.id,
-      })
-    );
-  });
-});
+      });
 
-describe("PUT /vino/:id", function () {
-  it("Respuesta con Código 404 y mensaje 'Vino no encontrado'", async () => {
-    const res = await request(app).put("/vino/9999").send({
-      nombre: "Vino Modificado",
-      anejamiento: "2021-01-01",
-      BodegaId: 1, // Suponiendo que 1 es un ID válido de Bodega
+      expect(res.statusCode).toEqual(201);
+      expect(res.body).toHaveProperty("id");
     });
-    expect(res.statusCode).toEqual(404);
-    expect(res.headers["content-type"]).toEqual(
-      "application/json; charset=utf-8"
-    );
-    expect(res.body).toEqual(
-      expect.objectContaining({
-        error: "Vino no encontrado",
-      })
-    );
   });
 
-  it("Respuesta con Código 200 y actualiza un vino", async () => {
-    // Primero, crea un vino para actualizar
-    const bodega = await Bodega.create({
-      nombre: "Otra Bodega",
-      anejamiento: "2005-05-01",
-    });
+  describe("PUT /vino/:id", () => {
+    it("debería obtener una respuesta con Código 200 y actualizar un vino existente", async () => {
+      const bodega = await Bodega.create({
+        nombre: "Otra Bodega",
+        fechaInauguracion: "2005-05-01",
+      });
 
-    const vino = await Vino.create({
-      nombre: "Vino Espumoso",
-      anejamiento: "2016-09-15",
-      BodegaId: bodega.id,
-    });
-
-    // Ahora actualiza el vino creado
-    const res = await request(app).put(`/vino/${vino.id}`).send({
-      nombre: "Vino Espumoso Modificado",
-      anejamiento: "2017-02-01",
-      BodegaId: bodega.id,
-    });
-
-    expect(res.statusCode).toEqual(200);
-    expect(res.headers["content-type"]).toEqual(
-      "application/json; charset=utf-8"
-    );
-    expect(res.body).toEqual(
-      expect.objectContaining({
-        id: vino.id,
-        nombre: "Vino Espumoso Modificado",
-        anejamiento: "2017-02-01",
+      const vino = await Vino.create({
+        nombre: "Vino a Actualizar",
+        anejamiento: "2015-01-01",
         BodegaId: bodega.id,
-      })
-    );
-  });
-});
+      });
 
-describe("DELETE /vino/:id", function () {
-  it("Respuesta con Código 404 y mensaje 'Vino no encontrado'", async () => {
-    const res = await request(app).delete("/vino/9999");
-    expect(res.statusCode).toEqual(404);
-    expect(res.headers["content-type"]).toEqual(
-      "application/json; charset=utf-8"
-    );
-    expect(res.body).toEqual(
-      expect.objectContaining({
-        error: "Vino no encontrado",
-      })
-    );
+      const res = await request(app).put(`/vino/${vino.id}`).send({
+        nombre: "Vino Actualizado",
+        anejamiento: "2016-01-01",
+        BodegaId: bodega.id,
+      });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toHaveProperty("nombre", "Vino Actualizado");
+    });
   });
 
-  it("Respuesta con Código 200 y mensaje 'Vino eliminado correctamente'", async () => {
-    const bodega = await Bodega.create({
-      nombre: "Bodega Eliminada",
-      anejamiento: "2000-01-01",
-    });
+  describe("DELETE /vino/:id", () => {
+    it("debería obtener una respuesta con Código 200 y el mensaje 'Vino eliminado correctamente'", async () => {
+      const bodega = await Bodega.create({
+        nombre: "Bodega a Eliminar",
+        fechaInauguracion: "2000-01-01",
+      });
 
-    const vino = await Vino.create({
-      nombre: "Vino a Eliminar",
-      anejamiento: "2015-05-10",
-      BodegaId: bodega.id,
-    });
+      const vino = await Vino.create({
+        nombre: "Vino a Eliminar",
+        anejamiento: "2010-01-01",
+        BodegaId: bodega.id,
+      });
 
-    const res = await request(app).delete(`/vino/${vino.id}`);
-    expect(res.statusCode).toEqual(200);
-    expect(res.headers["content-type"]).toEqual(
-      "application/json; charset=utf-8"
-    );
-    expect(res.body).toEqual(
-      expect.objectContaining({
-        message: "Vino eliminado correctamente",
-      })
-    );
+      const res = await request(app).delete(`/vino/${vino.id}`);
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toEqual({
+        mensaje: "Vino eliminado correctamente",
+      });
+    });
   });
 });

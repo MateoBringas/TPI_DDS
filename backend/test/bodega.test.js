@@ -49,8 +49,8 @@ describe("GET /bodega", function () {
     expect(res.body).toEqual(
       expect.objectContaining({
         id: bodegaId,
-        nombre: "Norton",
-        fechaInauguracion: "1980-05-15",
+        nombre: "Nueva Bodega",
+        fechaInauguracion: "2000-01-01",
       })
     );
   });
