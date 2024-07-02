@@ -32,7 +32,7 @@ const Resenia = {
           comentario TEXT,
           fecha DATE NOT NULL,
           EnologoId INTEGER NOT NULL,
-          FOREIGN KEY (EnologoId) REFERENCES enologos(id) ON DELETE CASCADE
+          FOREIGN KEY (EnologoId) REFERENCES enologos(id)
         );`,
   datos: `INSERT INTO resenia (puntuacion, comentario, fecha, EnologoId) VALUES
     (4, 'Muy buen vino, excelente aroma.', '2023-05-10', 1),
@@ -56,11 +56,16 @@ const Bodega = {
           fechaInauguracion DATE NOT NULL
         );`,
   datos: `INSERT INTO bodegas (nombre, fechaInauguracion) VALUES
-          ('Bodega A', '1995-08-10'),
-          ('Bodega B', '2000-04-25'),
-          ('Bodega C', '1988-12-15'),
-          ('Bodega D', '2010-10-30'),
-          ('Bodega E', '2005-06-12');`,
+           ('Chateau Lafite Rothschild', '1787-01-01'),
+            ('Catena Zapata', '1902-03-01'),
+            ('Norton', '1895-04-12'),
+            ('Opus One Winery', '1979-07-04'),
+            ('Domaine de la Romanée-Conti', '1232-10-15'),
+            ('Vega Sicilia', '1864-12-25'),
+            ('Antinori', '1385-09-08'),
+            ('Penfolds', '1844-06-30'),
+            ('Torres', '1870-11-20'),
+            ('Luigi Bosca', '1901-02-14');`,
 };
 
 // Definición del modelo de Vino
@@ -71,14 +76,19 @@ const Vino = {
           nombre TEXT NOT NULL,
           anejamiento DATE NOT NULL,
           BodegaId INTEGER NOT NULL,
-          FOREIGN KEY (BodegaId) REFERENCES bodegas(id) 
+          FOREIGN KEY (BodegaId) REFERENCES bodegas(id) ON DELETE CASCADE
         );`,
   datos: `INSERT INTO vinos (nombre, anejamiento, BodegaId) VALUES
           ('Vino Tinto Reserva', '2015-01-01', 1),
           ('Vino Blanco Semi Seco', '2018-02-15', 2),
           ('Vino Rosado Joven', '2020-05-20', 3),
           ('Vino Espumoso Brut', '2017-11-10', 4),
-          ('Vino Dulce Moscatel', '2019-09-05', 5);`,
+          ('Vino Dulce Moscatel', '2019-09-05', 5),
+          ('Vino Tinto Gran Reserva', '2012-04-03', 6),
+          ('Vino Blanco Extra Seco', '2016-08-20', 7),
+          ('Vino Rosado Crianza', '2018-12-15', 8),
+          ('Vino Espumoso Extra Brut', '2015-06-30', 9),
+          ('Vino Dulce Pedro Ximénez', '2021-02-10', 10);`,
 };
 
 // Definición del modelo de Cliente

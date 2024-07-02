@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import ClienteListado from './ClienteListado';
 import ClienteRegistro from './ClienteRegistro';
 import { clienteService } from '../../services/Cliente.service';
+import '../Paginas.css';
 
 const Cliente = () => {
   const { register, handleSubmit } = useForm();
@@ -12,7 +13,7 @@ const Cliente = () => {
   const [formKey, setFormKey] = useState(0); // Key to force remount
 
   const buscarClientes = async (nombre) => {
-    setClientes( await clienteService.Buscar(nombre));
+    setClientes(await clienteService.Buscar(nombre));
   };
 
   const agregarCliente = () => {
@@ -33,8 +34,9 @@ const Cliente = () => {
       setClientes(clientes.filter(cliente => cliente.id !== id));
   };
 
-  const guardarCliente = () => {
-    buscarClientes(); // Actualiza la lista de clientes después de guardar
+  const guardarCliente = async () => {
+    await buscarClientes(); // Actualiza la lista de clientes después de guardar
+    setShowRegistro(false); // Cierra el modal de registro/edición
   };
 
   useEffect(() => {
@@ -43,12 +45,28 @@ const Cliente = () => {
 
   return (
     <div className="container">
-      <h1 className="center-title">Clientes</h1>
+      <h1 className="tituloPagina">Clientes</h1>
       <form onSubmit={handleSubmit((data) => buscarClientes(data.Nombre))}>
-        <input className="search-input" {...register('Nombre')} placeholder='Nombre'/>
-        <button className="form-button" type='submit'>Buscar</button>
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-sm-6">
+              <label className="col-form-label" htmlFor="nombre">
+                Nombre:
+              </label>
+              <input 
+                className="search-input mb-2" // Nueva clase mb-2 para reducir el espacio
+                {...register('Nombre')} 
+                placeholder='Nombre'
+              />
+              <hr/> 
+            </div>
+            <div className="col-sm-6 d-flex align-items-center mt-2">
+              <button className="form-button me-2" type='submit'>Buscar</button>
+              <button className="form-button agregar" type='button' onClick={agregarCliente}>Agregar</button>
+            </div>
+          </div>
+        </div>
       </form>
-      <button className="form-button agregar" onClick={agregarCliente}>Agregar Cliente</button>
       
       <ClienteListado 
         clientes={clientes} 

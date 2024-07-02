@@ -53,12 +53,28 @@ const Pedido = () => {
 
   return (
     <div className="container">
-      <h1 className="center-title">Pedidos</h1>
+      <h1 className="tituloPagina">Pedidos</h1>
       <form onSubmit={handleSubmit((data) => buscarPedidos(data.comentarios))}>
-        <input className="search-input" {...register('comentarios')} placeholder='Comentarios'/>
-        <button className="form-button" type='submit'>Buscar</button>
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-sm-6">
+              <label className="col-form-label" htmlFor="comentarios">
+                Comentarios:
+              </label>
+              <input 
+                className="search-input mb-2" // Nueva clase mb-2 para reducir el espacio
+                {...register('comentarios')} 
+                placeholder='Comentarios'
+              />
+              <hr/> 
+            </div>
+            <div className="col-sm-6 d-flex align-items-center mt-2">
+              <button className="form-button me-2" type='submit'>Buscar</button>
+              <button className="form-button agregar" type='button' onClick={agregarPedido}>Agregar</button>
+            </div>
+          </div>
+        </div>
       </form>
-      <button className="form-button agregar" onClick={agregarPedido}>Agregar Pedido</button>
       
       <PedidoListado 
         pedidos={pedidos} 

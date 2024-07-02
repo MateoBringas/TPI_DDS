@@ -41,7 +41,7 @@ function Bodega() {
       }
       setItems(data);
     } catch (error) {
-      console.error("Error searching bodega:", error);
+      console.error("Error buscando la bodega:", error);
     }
   }, [Nombre]);
 
@@ -51,7 +51,7 @@ function Bodega() {
       const data = await bodegaService.BuscarPorId(id);
       setItem(data);
     } catch (error) {
-      console.error("Error fetching bodega con id:", error);
+      console.error("Error buscando la bodega con id:", error);
     }
   }, []);
 

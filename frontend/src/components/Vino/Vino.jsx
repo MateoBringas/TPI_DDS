@@ -95,7 +95,7 @@ function Vino() {
         alert("Vino eliminado correctamente.");
         Volver();
       } catch {
-        alert("No se puede eliminar el vino por que esta siendo utilizada o");
+        alert("No se puede eliminar el vino");
       }
     },
     [Volver]
@@ -147,7 +147,12 @@ function Vino() {
       )}
 
       <div className="table-container">
-        <VinoListado Items={Items} Modificar={Modificar} Eliminar={Eliminar} />
+        <VinoListado
+          Items={Items}
+          Modificar={Modificar}
+          Eliminar={Eliminar}
+          Bodegas={Bodegas}
+        />
       </div>
 
       {Items.length === 0 && (
