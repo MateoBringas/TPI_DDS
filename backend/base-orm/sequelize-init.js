@@ -54,51 +54,47 @@ const Enologo = sequelize.define(
 
 // Definición del modelo de Resenia
 const Resenia = sequelize.define(
-  "Resenia",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    puntuacion: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      validate: {
-        min: 1,
-        max: 10,
+    "Resenia",
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
       },
-    },
-    comentario: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-    },
-    fecha: {
-      type: DataTypes.DATEONLY,
-      allowNull: false,
-      validate: {
-        notNull: {
-          args: true,
-          msg: "Fecha es requerida",
+      puntuacion: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: {
+          min: 1,
+          max: 5, // Asegúrate de que este rango coincida con el rango en el frontend
+        },
+      },
+      comentario: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      fecha: {
+        type: DataTypes.DATEONLY,
+        allowNull: false,
+        validate: {
+          notNull: {
+            args: true,
+            msg: "Fecha es requerida",
+          },
+        },
+      },
+      EnologoId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Enologos', // Asegúrate de que el nombre del modelo coincida
+          key: 'id',
         },
       },
     },
-    EnologoId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: Enologo,
-        key: "id",
-      },
-      validate: {
-        notNull: {
-          args: true,
-          msg: "EnologoId es requerido",
-        },
-      },
-    },
-  },
-  { timestamps: false }
+    {
+      timestamps: false, // Cambia a `true` si necesitas las columnas createdAt y updatedAt
+    }
 );
 
 // Definición del modelo de Bodega
@@ -284,8 +280,8 @@ const Pedido = sequelize.define(
 Cliente.hasMany(Pedido, { foreignKey: "ClienteId", onDelete: "CASCADE" });
 Pedido.belongsTo(Cliente, { foreignKey: "ClienteId" });
 
-Enologo.hasMany(Resenia, { foreignKey: "enologoId", onDelete: "CASCADE" });
-Resenia.belongsTo(Enologo, { foreignKey: "enologoId" });
+Enologo.hasMany(Resenia, { foreignKey: "EnologoId", onDelete: "CASCADE" });
+Resenia.belongsTo(Enologo, { foreignKey: "EnologoId" });
 
 // Exportación de los modelos
 module.exports = {

@@ -11,6 +11,7 @@ import "../Paginas.css";
 function Resenia() {
     const [AccionABMC, setAccionABMC] = useState("L");
     const [Comentario, setComentario] = useState("");
+    const [Puntuacion, setPuntuacion] = useState("");
     const [Items, setItems] = useState([]);
     const [Item, setItem] = useState(null);
     const [Enologos, setEnologos] = useState([]);
@@ -28,7 +29,7 @@ function Resenia() {
         fetchEnologos();
     }, [fetchEnologos]);
 
-    const fetchResenia = useCallback(async () => {
+    const fetchResenias = useCallback(async () => {
         try {
             const data = await reseniaService.Buscar();
             setItems(data);
@@ -38,13 +39,13 @@ function Resenia() {
     }, []);
 
     useEffect(() => {
-        fetchResenia();
-    }, [fetchResenia]);
+        fetchResenias();
+    }, [fetchResenias]);
 
     const Volver = useCallback(() => {
         setAccionABMC("L");
-        fetchResenia();
-    }, [fetchResenia]);
+        fetchResenias();
+    }, [fetchResenias]);
 
     const Buscar = useCallback(async () => {
         setAccionABMC("L");
@@ -55,11 +56,16 @@ function Resenia() {
                     Resenia.comentario.toLowerCase().includes(Comentario.toLowerCase())
                 );
             }
+            if (Puntuacion) {
+                data = data.filter(
+                    (Resenia) => Resenia.puntuacion === parseInt(Puntuacion)
+                );
+            }
             setItems(data);
         } catch (error) {
-            console.error("Error searching resenia:", error);
+            console.error("Error searching resenias:", error);
         }
-    }, [Comentario]);
+    }, [Comentario, Puntuacion]);
 
     const BuscarPorId = useCallback(async (id, accionABMC) => {
         setAccionABMC(accionABMC);
@@ -82,8 +88,8 @@ function Resenia() {
         setAccionABMC("A");
         setItem({
             id: 0,
-            puntuacion: 0,
             comentario: "",
+            puntuacion: 0,
             fecha: moment(new Date()).format("YYYY-MM-DD"),
             EnologoId: 0,
         });
@@ -96,7 +102,7 @@ function Resenia() {
                 alert("Reseña eliminada correctamente.");
                 Volver();
             } catch {
-                alert("No se puede eliminar la reseña porque está siendo utilizada.");
+                alert("No se puede eliminar la reseña");
             }
         },
         [Volver]
@@ -123,12 +129,14 @@ function Resenia() {
 
     return (
         <div className="container">
-            <div className="tituloPagina">Reseña</div>
+            <div className="tituloPagina">Reseñas</div>
 
             <div className="search-container">
                 <ReseniaBuscar
                     Comentario={Comentario}
                     setComentario={setComentario}
+                    Puntuacion={Puntuacion}
+                    setPuntuacion={setPuntuacion}
                     Buscar={Buscar}
                     Agregar={Agregar}
                 />
@@ -148,12 +156,17 @@ function Resenia() {
             )}
 
             <div className="table-container">
-                <ReseniaListado Items={Items} Modificar={Modificar} Eliminar={Eliminar} />
+                <ReseniaListado
+                    Items={Items}
+                    Modificar={Modificar}
+                    Eliminar={Eliminar}
+                    Enologos={Enologos}
+                />
             </div>
 
             {Items.length === 0 && (
                 <div className="alert alert-info mensajesAlert">
-                    <i className="fa fa-exclamation-sign"></i> No se encontraron reseñas...
+                    <i className="fa fa-exclamation-sign"></i> No se encontraron Reseñas...
                 </div>
             )}
         </div>

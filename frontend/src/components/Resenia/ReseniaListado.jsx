@@ -1,11 +1,6 @@
 import React from "react";
 
-export default function ReseniaListado({
-                                           Items = [],   // Establecer un valor predeterminado vacío
-                                           Enologos = [], // Establecer un valor predeterminado vacío
-                                           Modificar,
-                                           Eliminar,
-                                       }) {
+export default function ReseniaListado({ Items, Modificar, Eliminar, Enologos = [] }) {
     return (
         <div className="table-responsive">
             <table className="table">
@@ -19,41 +14,38 @@ export default function ReseniaListado({
                 </tr>
                 </thead>
                 <tbody>
-                {Items.length > 0 ? (
-                    Items.map((item) => {
-                        const enologo = Enologos.find(enologo => enologo.id === item.EnologoId);
-                        return (
-                            <tr key={item.id}>
-                                <td className="text-center">{item.puntuacion}</td>
-                                <td className="text-center">{item.comentario}</td>
-                                <td className="text-center">{item.fecha}</td>
-                                <td className="text-center">
-                                    {enologo ? `${enologo.nombre} ${enologo.apellido}` : "No disponible"}
-                                </td>
-                                <td className="text-center text-nowrap">
-                                    <button
-                                        className="edit-button"
-                                        title="Modificar"
-                                        onClick={() => Modificar(item.id)}
-                                    >
-                                        <i className="fa fa-pencil"></i> Modificar
-                                    </button>
-                                    <button
-                                        className="delete-button"
-                                        title="Eliminar"
-                                        onClick={() => Eliminar(item.id)}
-                                    >
-                                        <i className="fa fa-times"></i> Eliminar
-                                    </button>
-                                </td>
-                            </tr>
-                        );
-                    })
-                ) : (
-                    <tr>
-                        <td colSpan="5" className="text-center">No hay reseñas disponibles.</td>
-                    </tr>
-                )}
+                {Items &&
+                    Items.map((Item) => (
+                        <tr key={Item.id}>
+                            <td className="text-center">{Item.puntuacion}</td>
+                            <td className="text-center">{Item.comentario}</td>
+                            <td className="text-center">{Item.fecha}</td>
+                            <td className="text-center">
+                                {
+                                    (Enologos && Array.isArray(Enologos)
+                                        ? Enologos.find((enologo) => enologo.id === Item.EnologoId)?.nombre
+                                        + " " + Enologos.find((enologo) => enologo.id === Item.EnologoId)?.apellido
+                                        : "Desconocido") || "Desconocido"
+                                }
+                            </td>
+                            <td className="text-center text-nowrap">
+                                <button
+                                    className="edit-button"
+                                    title="Modificar"
+                                    onClick={() => Modificar(Item.id)}
+                                >
+                                    <i className="fa fa-pencil"></i> Modificar
+                                </button>
+                                <button
+                                    className="delete-button"
+                                    title="Eliminar"
+                                    onClick={() => Eliminar(Item.id)}
+                                >
+                                    <i className="fa fa-times"></i> Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </div>

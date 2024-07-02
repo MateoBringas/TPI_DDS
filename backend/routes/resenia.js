@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { Resenia } = require("../base-orm/sequelize-init"); // Asegúrate de que la ruta y el nombre son correctos
+const { Enologo } = require("../base-orm/sequelize-init"); // Asegúrate de que la ruta y el nombre son correctos
 const { Op, ValidationError } = require("sequelize");
 
 // Endpoint para todas las reseñas
@@ -19,10 +20,6 @@ router.get('/resenia/:id', async (req, res) => {
     try {
         const reseniaId = req.params.id;
         const resenia = await Resenia.findByPk(reseniaId, {
-            include: [{
-                model: Enologo,
-                attributes: ['id', 'nombre', 'apellido']
-            }]
         });
 
         if (resenia) {
