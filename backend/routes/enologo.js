@@ -48,27 +48,20 @@ router.post('/enologo', async (req, res) => {
     }
 });
 
-// Endpoint para actualizar un enólogo
+// Actualizar enólogo
 router.put('/enologo/:id', async (req, res) => {
     try {
-        const enologoId = req.params.id;
-        const enologo = await Enologo.findByPk(enologoId);
-
+        const enologo = await Enologo.findByPk(req.params.id);
         if (!enologo) {
             return res.status(404).json({ error: 'Enólogo no encontrado' });
         }
 
         const { nombre, apellido, fechaNacimiento } = req.body;
-        await enologo.update({
-            nombre,
-            apellido,
-            fechaNacimiento
-        });
+        await enologo.update({ nombre, apellido, fechaNacimiento });
 
-        res.json(enologo);
+        res.status(200).json(enologo);
     } catch (error) {
-        console.error('Error al actualizar el enólogo:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
+        res.status(500).json({ error: 'Error al actualizar el enólogo' });
     }
 });
 

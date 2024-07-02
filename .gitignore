@@ -12,6 +12,7 @@ npm-debug.log*
 
 # Directorio de módulos de Node
 node_modules/
+.data
 jspm_packages/
 
 # Archivos de configuración del entorno

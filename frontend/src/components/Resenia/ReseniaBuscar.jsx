@@ -1,10 +1,10 @@
 import React from "react";
 
 export default function ReseniaBuscar({
-                                          Puntuacion,
-                                          setPuntuacion,
                                           Comentario,
                                           setComentario,
+                                          Puntuacion,
+                                          setPuntuacion,
                                           Buscar,
                                           Agregar
                                       }) {
@@ -22,7 +22,7 @@ export default function ReseniaBuscar({
                             id="puntuacion"
                             onChange={(e) => setPuntuacion(e.target.value)}
                             value={Puntuacion}
-                            min="1"
+                            min="0"
                             max="5"
                         />
                     </div>
@@ -41,7 +41,7 @@ export default function ReseniaBuscar({
                     </div>
                 </div>
 
-                <hr />
+                <hr/>
 
                 {/* Botones */}
                 <div className="row">
