@@ -24,6 +24,8 @@
     "supertest": "^7.0.0"
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "clearMocks": true,
+    "verbose": true
   }
 }
