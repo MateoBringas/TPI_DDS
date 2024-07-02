@@ -104,8 +104,9 @@ export default function ReseniaRegistro({
                                 className="form-input"
                                 {...register("fecha", {
                                     required: "Fecha es requerida",
+                                    validate: value => new Date(value) < new Date() || "La fecha debe ser menor a la fecha actual" // Puedes ajustar la validación según sea necesario
                                 })}
-                                onChange={(e) => setItem({ ...Item, fecha: e.target.value })}
+                                onChange={(e) => setItem({...Item, fecha: e.target.value})}
                             />
                             {errors.fecha && (
                                 <div className="text-danger">{errors.fecha.message}</div>
@@ -124,8 +125,8 @@ export default function ReseniaRegistro({
                             <select
                                 name="enologoId"
                                 className="form-input"
-                                {...register("EnologoId", { required: "Enólogo es requerido" })}
-                                onChange={(e) => setItem({ ...Item, EnologoId: parseInt(e.target.value, 10) })}
+                                {...register("EnologoId", {required: "Enólogo es requerido"})}
+                                onChange={(e) => setItem({...Item, EnologoId: parseInt(e.target.value, 10)})}
                             >
                                 <option value="">Seleccionar Enólogo</option>
                                 {Enologos.map((enologo) => (
