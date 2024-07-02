@@ -8,6 +8,8 @@ import Enologo from './components/Enologo/Enologo';
 import Bodega from './components/Bodega/Bodega';
 import Pedido from './components/Pedido/Pedido';
 import Cliente from './components/Cliente/Cliente';
+import Region from './components/Region/Region';
+import Personalizacion from './components/Personalizacion/Personalizacion';
 
 function App() {
     return (
@@ -21,6 +23,8 @@ function App() {
                 <Route path="/bodega" element={<Bodega />} />
                 <Route path="/cliente" element={<Cliente/>} />
                 <Route path="/pedido" element={<Pedido/>} />
+                <Route path="/region" element={<Region/>} />
+                <Route path="/personalizacion" element={<Personalizacion/>} />
             </Routes>
         </BrowserRouter>
     );

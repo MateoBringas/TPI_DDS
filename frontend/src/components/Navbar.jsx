@@ -13,8 +13,9 @@ function Navbar() {
                 <Link to="/enologo">Enólogo</Link>
                 <Link to="/pedido">Pedido</Link>
                 <Link to="/cliente">Clientes</Link>
+                <Link to="/region">Regiones</Link>
+                <Link to="/personalizacion">Personalizaciones</Link>
             </div>
-            <Link to="/login" className="login-button">Iniciar Sesión</Link>
         </nav>
     );
 }

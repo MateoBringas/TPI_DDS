@@ -269,13 +269,123 @@ const Pedido = sequelize.define(
         },
       },
     },
-    comentarios: {
+        comentarios: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
   },
   { timestamps: false }
 );
+
+
+// Definición del modelo de Region
+const Region = sequelize.define(
+  "Region",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    provincia: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          args: true,
+          msg: "Provincia es requerido",
+        },
+        len: {
+          args: [2, 50],
+          msg: "Provincia debe ser tipo caracteres, entre 2 y 50 de longitud",
+        },
+      },
+    },
+    ciudad: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          args: true,
+          msg: "Ciudad es requerido",
+        },
+        len: {
+          args: [2, 50],
+          msg: "Ciudad debe ser tipo caracteres, entre 2 y 50 de longitud",
+        },
+      },
+    },
+    fechaRegistro: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+      validate: {
+        notNull: {
+          args: true,
+          msg: "Fecha de registro es requerida",
+        },
+      },
+    },
+
+  },
+  { timestamps: false }
+);
+
+// Definición del modelo de Personalizacion
+const Personalizacion = sequelize.define(
+  "Personalizacion",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    nombre: {
+      type: DataTypes.STRING(80),
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          args: true,
+          msg: "Nombre es requerido",
+        },
+        len: {
+          args: [2, 80],
+          msg: "Nombre debe ser tipo caracteres, entre 2 y 50 de longitud",
+        },
+      },
+    },
+    fechaCreacion: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+      validate: {
+        notNull: {
+          args: true,
+          msg: "Fecha de creacion es requerida",
+        },
+      },
+    },
+    RegionId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Region,
+        key: "id",
+      },
+      validate: {
+        notNull: {
+          args: true,
+          msg: "RegionId es requerido",
+        },
+      },
+    },
+    productos: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+  },
+  { timestamps: false }
+);
+
+
 
 Cliente.hasMany(Pedido, { foreignKey: "ClienteId", onDelete: "CASCADE" });
 Pedido.belongsTo(Cliente, { foreignKey: "ClienteId" });
@@ -286,6 +396,9 @@ Resenia.belongsTo(Enologo, { foreignKey: "EnologoId" });
 Bodega.hasMany(Vino, { foreignKey: "BodegaId", onDelete: "CASCADE" });
 Vino.belongsTo(Bodega, { foreignKey: "BodegaId" });
 
+Region.hasMany(Personalizacion, { foreignKey: "RegionId", onDelete: "CASCADE" });
+Personalizacion.belongsTo(Region, { foreignKey: "RegionId" });
+
 // Exportación de los modelos
 module.exports = {
   sequelize,
@@ -295,4 +408,6 @@ module.exports = {
   Vino,
   Cliente,
   Pedido,
+  Region,
+  Personalizacion
 };

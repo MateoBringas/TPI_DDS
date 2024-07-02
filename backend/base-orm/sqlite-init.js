@@ -135,6 +135,56 @@ const Pedido = {
           ('2022-11-30', 9, 'Cliente satisfecho con el producto.'),
           ('2022-12-15', 10, 'Cliente menciona que el embalaje estaba dañado.');`,
 };
+
+
+// Definición del modelo de Region
+const Region = {
+  nombre: "Regions",
+  sql: `CREATE TABLE Regions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          provincia TEXT NOT NULL,
+          ciudad TEXT NOT NULL,
+          fechaRegistro DATE NOT NULL
+        );`,
+  datos: `INSERT INTO Regions (provincia, ciudad, fechaRegistro) VALUES
+          ('Tucuman', 'San Miguel de Tucuman', '2021-01-15'),
+          ('Cordoba', 'Calamuchita', '2020-02-20'),
+          ('Cordoba', 'Cosquin', '2019-03-25'),
+          ('La Pampa', 'General Pico', '2018-04-30'),
+          ('Santiago del Estero', 'Rivadavia', '2022-05-10'),
+          ('Mendoza', 'Lavalle', '2021-06-20'),
+          ('Mendoza', 'Lujan de Cuyo', '2020-07-15'),
+          ('Cordoba', 'Cordoba', '2019-08-18'),
+          ('San Juan', 'Rawson', '2018-09-05'),
+          ('Mendoza', 'Mendoza', '2022-10-12');`,
+};
+
+// Definición del modelo de Personalizacion
+const Personalizacion = {
+  nombre: "Personalizacions",
+  sql: `CREATE TABLE Personalizacions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT NOT NULL,
+            fechaCreacion DATE NOT NULL,
+            RegionId INTEGER,
+            productos TEXT NOT NULL,
+            FOREIGN KEY (RegionId) REFERENCES Region(id)
+        );`,
+  datos: `INSERT INTO Personalizacions (nombre, fechaCreacion, RegionId, productos) VALUES
+          ('Mega Pack', '2021-01-15', 1, '2 Vinos Malvec, Lo Cabernet Sauvignon 2020'),
+          ('Sorpresa', '2020-02-20', 3, 'Achaval Ferrer Cabernet Sauvignon 2020, Zuccardi Q Cabernet Sauvignon 2020'),
+          ('Felicidades', '2024-03-25', 2, 'Alma 4 Phos Pet Nat 2022, Manos Negras Artesano Pinot Noir 2020'),
+          ('Espectacular', '2022-04-30', 4, 'Manos Negras Artesano Pinot Noir 2020, Bira Rosso DUco 2022'),
+          ('Combo Fuerte', '2022-05-10', 6, 'Gran Enemigo Single Vineyard Agrelo 2018, Alma 4 Crudo Semillón 2019'),
+          ('Marcador', '2021-06-20', 7, 'Viña Cobos Vinculum Chardonnay 2020, El Enemigo Bonarda 2020'),
+          ('Trivento Malbec Terroirs', '2020-07-15', 5, 'Trivento Gualtallary Tupungato 2017, Trivento Paraje Altamira 2017, Trivento San Pablo Tunuyan 2017'),
+          ('Pink', '2019-08-18', 10, 'Martir Rosé 2018, Bira Rosa di Rosso 2018'),
+          ('Fiestas Espumosas', '2018-09-05', 9, 'Taittinger Champagne Brut Reserve, Espumante Cruzat Cuvee Extra Brut'),
+          ('Golden Black', '2022-10-12', 8, 'Viña Cobos Volturno 2020, Viña Cobos Malvec 2020');`,
+};
+
+
+
 async function CrearBaseSiNoExiste() {
   try {
     // abrir base, si no existe el archivo/base lo crea
@@ -148,6 +198,8 @@ async function CrearBaseSiNoExiste() {
       crearTablaSiNoExiste(Vino),
       crearTablaSiNoExiste(Cliente),
       crearTablaSiNoExiste(Pedido),
+      crearTablaSiNoExiste(Region),
+      crearTablaSiNoExiste(Personalizacion),
     ]);
 
     // Agregar datos iniciales si las tablas están recién creadas
@@ -158,6 +210,8 @@ async function CrearBaseSiNoExiste() {
       agregarDatosSiNoExisten(Vino),
       agregarDatosSiNoExisten(Cliente),
       agregarDatosSiNoExisten(Pedido),
+      agregarDatosSiNoExisten(Region),
+      agregarDatosSiNoExisten(Personalizacion)
     ]);
 
     // cerrar la base
