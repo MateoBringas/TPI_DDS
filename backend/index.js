@@ -22,7 +22,8 @@ app.get("/", (req, res) => {
         "Reseña <a href='http://localhost:4000/resenia'>http://localhost:4000/resenia</a><br>" +
         "Enologo <a href='http://localhost:4000/enologo'>http://localhost:4000/enologo</a><br>" +
         "Cliente <a href='http://localhost:4000/cliente'>http://localhost:4000/cliente</a><br>" +
-        "Pedido <a href='http://localhost:4000/pedido'>http://localhost:4000/pedido</a>");});
+        "Pedido <a href='http://localhost:4000/pedido'>http://localhost:4000/pedido</a>");
+});
 
 // Routes para los nuevos modelos
 const enologoRouter = require("./routes/enologo");
@@ -50,4 +51,4 @@ if (!module.parent) {
     });
 }
 
-// module.exports = app; // para testing
+module.exports = app; // exporta app para pruebas

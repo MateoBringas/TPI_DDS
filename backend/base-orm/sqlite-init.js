@@ -32,7 +32,7 @@ const Resenia = {
           comentario TEXT,
           fecha DATE NOT NULL,
           EnologoId INTEGER NOT NULL,
-          FOREIGN KEY (EnologoId) REFERENCES enologos(id)
+          FOREIGN KEY (EnologoId) REFERENCES enologos(id) ON DELETE CASCADE
         );`,
   datos: `INSERT INTO resenia (puntuacion, comentario, fecha, EnologoId) VALUES
     (4, 'Muy buen vino, excelente aroma.', '2023-05-10', 1),
