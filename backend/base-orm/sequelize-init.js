@@ -287,6 +287,9 @@ Pedido.belongsTo(Cliente, { foreignKey: "ClienteId" });
 Enologo.hasMany(Resenia, { foreignKey: "enologoId", onDelete: "CASCADE" });
 Resenia.belongsTo(Enologo, { foreignKey: "enologoId" });
 
+Bodega.hasMany(Vino, { foreignKey: "BodegaId", onDelete: "CASCADE" });
+Vino.belongsTo(Bodega, { foreignKey: "BodegaId" });
+
 // Exportación de los modelos
 module.exports = {
   sequelize,
